@@ -39,6 +39,14 @@ jobs:
           cp main/index.html dist/index.html
           cp development/index.html dist/test/index.html
 
+      - name: Mark test build as TEST (green sidebar)
+        run: |
+          sed -i \
+            -e 's/--merk:#cc0000;/--merk:#0f7a45;/' \
+            -e 's/--merk-donker:#a80000;/--merk-donker:#0b5c34;/' \
+            -e 's/--merk-licht:#e02020;/--merk-licht:#1a9d5c;/' \
+            dist/test/index.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
