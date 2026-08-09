@@ -138,6 +138,11 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .stat.accent{background:var(--merk);border-color:var(--merk);color:#fff}
 .stat.accent .k{color:rgba(255,255,255,.75)}
 .stat.accent .v small{color:rgba(255,255,255,.8)}
+/* Bewerkbaar tarief in de statkaart: leest als de grote statwaarde, geen spinner-pijltjes */
+.stat .v .rate-input{width:4.5ch;font:inherit;font-size:24px;font-weight:700;letter-spacing:-.02em;text-align:right;padding:2px 6px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:inherit;-moz-appearance:textfield;transition:border-color .12s,box-shadow .12s}
+.stat .v .rate-input:hover{border-color:var(--muted-2)}
+.stat .v .rate-input:focus{outline:none;border-color:var(--merk);box-shadow:0 0 0 3px rgba(204,0,0,.14)}
+.stat .v .rate-input::-webkit-outer-spin-button,.stat .v .rate-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 
 /* ---------- Day list ---------- */
 .day-list{display:flex;flex-direction:column;gap:8px}
@@ -543,7 +548,7 @@ table.grid tfoot td{font-weight:700;background:var(--surface-2);border-top:2px s
 
     <div class="stats">
       <div class="stat"><div class="k">Totaal kilometers</div><div class="v"><span id="stKm">0</span> <small>km</small></div></div>
-      <div class="stat"><div class="k">Vergoeding per km · deze maand</div><div class="v"><span aria-hidden="true">€&nbsp;</span><input type="number" id="stRate" step="0.01" min="0" inputmode="decimal" aria-label="Vergoeding per kilometer voor deze maand" title="Tarief voor deze maand. Een wijziging hier geldt alleen voor deze maand — handig om een eerdere maand te corrigeren bij een tariefwijziging met terugwerkende kracht." style="width:5ch;font:inherit;font-size:24px;font-weight:700;letter-spacing:-.02em;padding:1px 5px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:inherit;-moz-appearance:textfield"></div></div>
+      <div class="stat"><div class="k">Vergoeding per km · deze maand</div><div class="v"><span aria-hidden="true">€&nbsp;</span><input type="text" id="stRate" class="rate-input" inputmode="decimal" autocomplete="off" aria-label="Vergoeding per kilometer voor deze maand" title="Tarief voor deze maand. Een wijziging hier geldt alleen voor deze maand — handig om een eerdere maand te corrigeren bij een tariefwijziging met terugwerkende kracht."></div></div>
       <div class="stat accent"><div class="k">Declaratiebedrag</div><div class="v" id="stTotal">€ 0,00</div></div>
       <div class="stat"><div class="k">Dagen met ritten</div><div class="v"><span id="stDays">0</span> <small>dagen</small></div></div>
     </div>
@@ -1989,7 +1994,7 @@ function tekenStats() {
   const rate = Number(maandInstellingen(ui.ym).vergoeding) || 0;
   const dagen = maandDagen(ui.ym).filter(d => dagKm(d.data) > 0).length;
   $('#stKm').textContent = km.toLocaleString('nl-NL');
-  if (document.activeElement !== $('#stRate')) $('#stRate').value = rate;
+  if (document.activeElement !== $('#stRate')) $('#stRate').value = rate.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   $('#stTotal').textContent = eur(km * rate);
   $('#stDays').textContent = dagen;
   $('#monthLabel').textContent = ymLabel(ui.ym);
@@ -2396,6 +2401,11 @@ $('#stRate').oninput = e => {
   save();
   $('#stTotal').textContent = eur(maandKm(ui.ym) * rate);   // bedrag live bijwerken, input niet herrenderen (geen cursorsprong)
   tekenOverzicht();
+};
+$('#stRate').onblur = e => {   // na het typen netjes terug naar 0,00-notatie met komma
+  const v = parseFloat(String(e.target.value).replace(',', '.'));
+  const rate = (isFinite(v) && v >= 0) ? v : 0;
+  e.target.value = rate.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 $('#btnFillWeek').onclick = async () => {
