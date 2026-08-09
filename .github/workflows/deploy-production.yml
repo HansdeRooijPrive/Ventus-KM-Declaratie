@@ -39,13 +39,19 @@ jobs:
           cp main/index.html dist/index.html
           cp development/index.html dist/test/index.html
 
-      - name: Mark test build as TEST (green sidebar)
+      - name: Mark test build as TEST (green sidebar + isolated storage)
         run: |
           sed -i \
             -e 's/--merk:#cc0000;/--merk:#0f7a45;/' \
             -e 's/--merk-donker:#a80000;/--merk-donker:#0b5c34;/' \
             -e 's/--merk-licht:#e02020;/--merk-licht:#1a9d5c;/' \
+            -e "s/const STORE_KEY = 'kmdeclaratie.v1';/const STORE_KEY = 'kmdeclaratie.test.v1';/" \
+            -e "s/const IDB_DB = 'kilometerdeclaratie',/const IDB_DB = 'kilometerdeclaratie-test',/" \
             dist/test/index.html
+          # Fail the build als de opslag-isolatie niet is toegepast: de testomgeving mag
+          # nooit stilzwijgend dezelfde localStorage/bestands-handle als productie delen.
+          grep -qF "kmdeclaratie.test.v1" dist/test/index.html || { echo "::error::Test STORE_KEY isolatie mislukt"; exit 1; }
+          grep -qF "kilometerdeclaratie-test" dist/test/index.html || { echo "::error::Test IndexedDB isolatie mislukt"; exit 1; }
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
