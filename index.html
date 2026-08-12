@@ -3733,8 +3733,8 @@ function opslagPaneelHtml() {
   if (D.settings.opslagModus === 'onedrive') {
     const sub = { ok: 'Gesynchroniseerd met OneDrive', bezig: 'Bezig met synchroniseren…', verbinden: 'Nog niet ingelogd bij Microsoft', fout: 'Laatste sync mislukte: ' + opslag.melding }[opslag.status] || 'OneDrive-opslag';
     return '<div class="opslag-info"><span class="ico">☁️</span><div>' +
-      '<div class="bestand">OneDrive (app-map)</div>' +
-      '<div class="sub">' + esc(sub) + '</div></div></div>';
+      '<div class="bestand">OneDrive · ' + esc(OD.bestand) + '</div>' +
+      '<div class="sub">' + esc(sub) + (OD.web ? ' · <a href="' + esc(OD.web) + '" target="_blank" rel="noopener">openen</a>' : '') + '</div></div></div>';
   }
   if (!heeftBestandsAPI) {
     return '<div class="banner err" style="margin:0">Deze browser kan niet rechtstreeks naar een bestand op je computer schrijven. ' +
@@ -3859,7 +3859,9 @@ const OD = {
   get redirect() { return location.origin + location.pathname; },  // exact deze pagina
   bestand: 'kilometerdeclaratie.json',
   token: null,     // { access, refresh, expires(ms) }
-  etag: null       // laatst bekende cTag van het bestand in OneDrive
+  etag: null,      // laatst bekende cTag van het bestand in OneDrive
+  web: null,       // webUrl om het bestand in OneDrive te openen
+  pad: null        // volledige map/pad in OneDrive (uit de metadata)
 };
 let odTimer = null;
 
@@ -3940,6 +3942,14 @@ async function odGraph(pad, opt) {
   return fetch('https://graph.microsoft.com/v1.0' + pad, Object.assign({}, opt, { headers }));
 }
 const OD_PAD = () => '/me/drive/special/approot:/' + OD.bestand;
+/* Leesbaar map+bestand-pad uit de Graph-metadata, bijv. /Apps/Kilometerdeclaratie/kilometerdeclaratie-test.json */
+function odPadUit(item) {
+  try {
+    const p = (item && item.parentReference && item.parentReference.path) || '';
+    const map = decodeURIComponent(p.replace(/^\/drive\/root:/, ''));
+    return map + '/' + ((item && item.name) || OD.bestand);
+  } catch (e) { return null; }
+}
 
 /* haal de administratie uit OneDrive; maakt het bestand aan als het nog niet bestaat */
 async function odTrekBinnen(stil) {
@@ -3959,6 +3969,7 @@ async function odTrekBinnen(stil) {
     migreer();
     try { localStorage.setItem(STORE_KEY, JSON.stringify(D)); } catch (e) { /* noodkopie is optioneel */ }
     OD.etag = mj.cTag || mj.eTag || null; odBewaarEtag();
+    OD.web = mj.webUrl || OD.web; OD.pad = odPadUit(mj);
     uitBrowserkopie = false;
     hertekenAlles();
     zetStatus('ok'); odTekenStatus();
@@ -3990,6 +4001,7 @@ async function odDuw(stil) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const m = await r.json();
     OD.etag = m.cTag || m.eTag || null; odBewaarEtag();
+    OD.web = m.webUrl || OD.web; OD.pad = odPadUit(m) || OD.pad;
     uitBrowserkopie = false;
     zetStatus('ok'); odTekenStatus();
     return true;
@@ -4014,7 +4026,10 @@ function odTekenStatus() {
     msg = 'Ingelogd bij OneDrive.' + (opslag.status === 'ok' ? ' Laatst gesynchroniseerd.' : opslag.status === 'fout' ? ' Laatste sync mislukte — probeer “Nu synchroniseren”.' : '');
     kl = opslag.status === 'fout' ? 'err' : 'ok';
   } else { msg = 'Nog niet ingelogd bij Microsoft.'; kl = 'info'; }
-  st.innerHTML = '<div class="banner ' + kl + '" style="margin:0">' + esc(msg) + '</div>';
+  const detail = OD.pad ? esc(OD.pad) : esc(OD.bestand);
+  const link = OD.web ? ' · <a href="' + esc(OD.web) + '" target="_blank" rel="noopener">openen in OneDrive</a>' : '';
+  const bestandregel = '<div class="muted" style="font-size:12.5px;margin-top:6px">Deze omgeving slaat op in OneDrive-bestand: <strong>' + detail + '</strong>' + link + '</div>';
+  st.innerHTML = '<div class="banner ' + kl + '" style="margin:0">' + esc(msg) + '</div>' + bestandregel;
 }
 
 function odToonHelp() {
@@ -4044,7 +4059,7 @@ async function odInit() {
   odLaadOpslag();
   const kwamTerug = await odAfhandelenRedirect();
   if (D.settings.opslagModus === 'onedrive') {
-    opslag.naam = 'OneDrive';
+    opslag.naam = 'OneDrive · ' + OD.bestand;
     if (await odGeldigToken()) await odTrekBinnen(true);
     else zetStatus('verbinden');
   }
@@ -4133,7 +4148,7 @@ function bindInstellingen() {
     s().opslagModus = m; save(); odTekenStatus(); tekenOpslag();
     if (m === 'onedrive') {
       OD.clientId = s().odClientId || '';
-      opslag.naam = 'OneDrive';
+      opslag.naam = 'OneDrive · ' + OD.bestand;
       if (!OD.clientId) toast('Vul je Client ID in en klik daarna op “Inloggen met Microsoft”');
       else if (await odGeldigToken()) await odTrekBinnen();
       else toast('Klik op “Inloggen met Microsoft” om te koppelen');
