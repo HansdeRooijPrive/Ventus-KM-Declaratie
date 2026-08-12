@@ -47,11 +47,13 @@ jobs:
             -e 's/--merk-licht:#e02020;/--merk-licht:#1a9d5c;/' \
             -e "s/const STORE_KEY = 'kmdeclaratie.v1';/const STORE_KEY = 'kmdeclaratie.test.v1';/" \
             -e "s/const IDB_DB = 'kilometerdeclaratie',/const IDB_DB = 'kilometerdeclaratie-test',/" \
+            -e "s/bestand: 'kilometerdeclaratie.json',/bestand: 'kilometerdeclaratie-test.json',/" \
             dist/test/index.html
           # Fail the build als de opslag-isolatie niet is toegepast: de testomgeving mag
-          # nooit stilzwijgend dezelfde localStorage/bestands-handle als productie delen.
+          # nooit stilzwijgend dezelfde localStorage/bestands-handle/OneDrive-bestand als productie delen.
           grep -qF "kmdeclaratie.test.v1" dist/test/index.html || { echo "::error::Test STORE_KEY isolatie mislukt"; exit 1; }
-          grep -qF "kilometerdeclaratie-test" dist/test/index.html || { echo "::error::Test IndexedDB isolatie mislukt"; exit 1; }
+          grep -qF "kilometerdeclaratie-test'," dist/test/index.html || { echo "::error::Test IndexedDB isolatie mislukt"; exit 1; }
+          grep -qF "kilometerdeclaratie-test.json" dist/test/index.html || { echo "::error::Test OneDrive-bestand isolatie mislukt"; exit 1; }
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
