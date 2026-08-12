@@ -3763,15 +3763,21 @@ function tekenOpslag() {
   if (pill) {
     const kl = { ok: 'ok', bezig: 'busy', verbinden: 'warn', geweigerd: 'err', fout: 'err', browser: 'warn' }[opslag.status] || '';
     pill.className = 'opslag-pill ' + kl;
-    tekst.textContent = {
-      ok: opslag.naam || 'Opgeslagen',
-      bezig: 'Opslaan…',
-      verbinden: 'Verbinding herstellen',
-      geweigerd: 'Geen toegang',
-      fout: 'Opslaan mislukt',
-      browser: 'Alleen in deze browser'
-    }[opslag.status] || 'Opslag';
-    pill.title = opslag.handle ? 'Opslaglocatie: ' + opslag.naam : 'Nog geen opslagbestand gekozen';
+    if (D.settings.opslagModus === 'onedrive') {
+      tekst.textContent = 'OneDrive · ' + OD.bestand;
+      const staat = { ok: ' — gesynchroniseerd', bezig: ' — bezig met opslaan…', verbinden: ' — nog niet ingelogd', fout: ' — laatste sync mislukte' }[opslag.status] || '';
+      pill.title = 'OneDrive-bestand: ' + (OD.pad || OD.bestand) + staat;
+    } else {
+      tekst.textContent = {
+        ok: opslag.naam || 'Opgeslagen',
+        bezig: 'Opslaan…',
+        verbinden: 'Verbinding herstellen',
+        geweigerd: 'Geen toegang',
+        fout: 'Opslaan mislukt',
+        browser: 'Alleen in deze browser'
+      }[opslag.status] || 'Opslag';
+      pill.title = opslag.handle ? 'Opslaglocatie: ' + opslag.naam : 'Nog geen opslagbestand gekozen';
+    }
   }
 
   const b = $('#opslagBanner');
