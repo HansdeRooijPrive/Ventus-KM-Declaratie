@@ -4023,9 +4023,10 @@ function odToonHelp() {
     '<header><h3>OneDrive instellen (eenmalig)</h3></header>' +
     '<div class="body">' +
     '<p style="margin:0 0 10px">Je maakt één keer een gratis app-registratie aan; daarna kan iedereen met een Microsoft-account inloggen. Je hebt geen server of betaald abonnement nodig.</p>' +
+    '<div class="banner warn" style="margin:0 0 12px">Gebruik je een <strong>persoonlijk</strong> Microsoft-account (hotmail/outlook/live) en krijg je “<em>toepassingen buiten een map maken is afgeschaft</em>”? Maak dan eerst gratis een map aan: ga naar <a href="https://entra.microsoft.com" target="_blank" rel="noopener">entra.microsoft.com</a> → <strong>Identity → Tenants beheren → Maken → Microsoft Entra ID</strong> (geen creditcard nodig), wissel naar die nieuwe map en ga daarna verder met stap 1.</div>' +
     '<ol style="margin:0 0 12px;padding-left:20px;line-height:1.6">' +
     '<li>Ga naar <a href="https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank" rel="noopener">portal.azure.com → App-registraties</a> en klik <strong>Nieuwe registratie</strong>.</li>' +
-    '<li>Naam: bijv. <em>Kilometerdeclaratie</em>. Accounttypes: <strong>Persoonlijke Microsoft-accounts</strong> (of ook zakelijk, als je dat wilt).</li>' +
+    '<li>Naam: bijv. <em>Kilometerdeclaratie</em>. Bij <strong>Ondersteunde accounttypen</strong> kies je “<strong>Accounts in elke organisatiemap én persoonlijke Microsoft-accounts</strong>” — dat laat je met je eigen (hotmail-)account inloggen.</li>' +
     '<li>Bij <strong>Redirect-URI</strong>: kies platform <strong>Single-page application (SPA)</strong> en plak de URL hieronder.</li>' +
     '<li>Onder <strong>API-machtigingen</strong>: Microsoft Graph → <em>Gedelegeerd</em> → <code>Files.ReadWrite.AppFolder</code> (en <code>offline_access</code>).</li>' +
     '<li>Kopieer de <strong>Toepassings-id (client)</strong> en plak die in het veld “Microsoft Client ID”.</li>' +
