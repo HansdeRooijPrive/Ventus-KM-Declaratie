@@ -33,6 +33,12 @@ jobs:
           ref: development
           path: development
 
+      - name: Build index.html from src (per branch, indien aanwezig)
+        run: |
+          for d in main development; do
+            if [ -f "$d/build.py" ]; then (cd "$d" && python3 build.py); fi
+          done
+
       - name: Assemble site (production at root, test build under /test)
         run: |
           mkdir -p dist/test

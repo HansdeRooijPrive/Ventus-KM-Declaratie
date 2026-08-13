@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kilometerdeclaratie</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+<style>{{STYLES}}</style>
+</head>
+<body>
+
+<aside class="zijbalk">
+  <div class="zb-merk">
+    <div class="zb-logo">VENTUS</div>
+    <div class="zb-sub">Kilometerdeclaratie</div>
+  </div>
+  <nav class="zb-nav" id="tabs">
+    <div class="zb-groep">Registratie</div>
+    <button data-view="maand" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
+      Maand
+    </button>
+    <button data-view="overzicht">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5h12M8 12h12M8 19h12M3.5 5h.01M3.5 12h.01M3.5 19h.01"/></svg>
+      Overzicht
+    </button>
+    <div class="zb-groep">Beheer</div>
+    <button data-view="locaties">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+      Locaties
+    </button>
+    <button data-view="instellingen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M20.2 14.3a1.6 1.6 0 0 0 .32 1.76l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-2.72 1.13V20a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-2.72-1.13l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.6 1.6 0 0 0 .32-1.76 1.6 1.6 0 0 0-1.46-.98H4a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.46-.98 1.6 1.6 0 0 0-.32-1.76l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.6 1.6 0 0 0 1.76.32H10a1.6 1.6 0 0 0 .98-1.46V4a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 .98 1.46 1.6 1.6 0 0 0 1.76-.32l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.32 1.76V10a1.6 1.6 0 0 0 1.46.98H20a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.46.98z"/></svg>
+      Instellingen
+    </button>
+    <div class="zb-groep">Hulp</div>
+    <button data-view="handleiding">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H11v18H5.5A1.5 1.5 0 0 1 4 19.5z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H13v18h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg>
+      Handleiding
+    </button>
+    <button data-view="nieuws">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      Nieuws<span class="nav-badge" id="nieuwsBadge"></span>
+    </button>
+    <button data-view="over">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+      Over deze app
+    </button>
+  </nav>
+  <div class="zb-voet">
+    <div class="naam" id="brandSub">rittenadministratie</div>
+    <button class="opslag-pill" id="opslagPill" title="Opslaglocatie">
+      <span class="dot"></span><span id="opslagPillTekst">Opslag…</span>
+    </button>
+    <button class="versie-chip" id="versieChip" title="Versie-informatie">v—</button>
+  </div>
+</aside>
+
+<main>
+  <div id="opslagBanner" class="banner hidden no-print"></div>
+
+  <!-- ============ WELKOM ============ -->
+  <section class="view" id="view-welkom">
+    <div class="paginakop">
+      <h1>Welkom bij de kilometerdeclaratie</h1>
+      <p>Nog even drie dingen instellen, daarna kun je je eerste rit vastleggen.</p>
+    </div>
+    <div class="banner info" style="margin-bottom:20px">
+      <span class="grow">De app start leeg: er staan geen gegevens van iemand anders in. Alles wat je invult
+        blijft van jou en komt in je eigen opslagbestand terecht.</span>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:16px">
+      <div class="section-title">Stap 1 · Jouw gegevens</div>
+      <div class="grid2">
+        <div class="field"><label>Naam</label><input type="text" id="wkNaam" placeholder="Voor- en achternaam"></div>
+        <div class="field"><label>Voertuig</label>
+          <select id="wkVoertuig"><option value="auto">Auto</option><option value="motor">Motor</option></select>
+        </div>
+        <div class="field"><label>Kenteken</label><input type="text" id="wkKenteken" placeholder="XX-999-X"></div>
+        <div class="field"><label>Vergoeding per kilometer (€)</label><input type="number" id="wkVergoeding" step="0.01" min="0" value="0.25"></div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:16px">
+      <div class="section-title">Stap 2 · Thuisadres</div>
+      <p class="muted" style="margin:0 0 12px;font-size:13.5px">Je vaste vertrekpunt. Vanaf hier worden je
+        ritten geketend en werkt de knop “Rit naar huis”.</p>
+      <div id="wkThuis"></div>
+      <button class="btn sm" id="btnWkThuis" style="margin-top:10px">Thuisadres instellen…</button>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:16px">
+      <div class="section-title">Stap 3 · Opslagbestand</div>
+      <p class="muted" style="margin:0 0 12px;font-size:13.5px">Kies waar je administratie bewaard wordt.
+        Zonder opslagbestand staat alles alleen in deze browser.</p>
+      <div id="wkOpslag" style="margin-bottom:12px"></div>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <button class="btn sm primary" id="btnWkNieuw">Nieuw bestand maken…</button>
+        <button class="btn sm" id="btnWkOpenen">Bestaand bestand openen…</button>
+      </div>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:20px">
+      <div class="section-title">Optioneel · Locaties en afstanden</div>
+      <p class="muted" style="margin:0 0 12px;font-size:13.5px">Heb je al een lijst met adressen en
+        afstanden, bijvoorbeeld uit een spreadsheet? Importeer die dan nu, dan hoeft de app die trajecten
+        later niet meer op te zoeken.</p>
+      <button class="btn sm" id="btnWkImport">Locaties en afstanden importeren…</button>
+      <div class="muted" style="font-size:12.5px;margin-top:8px" id="wkImportStatus"></div>
+    </div>
+
+    <div class="row" style="gap:10px">
+      <button class="btn primary" id="btnWkKlaar">Aan de slag →</button>
+      <button class="btn ghost" id="btnWkOverslaan">Later instellen</button>
+    </div>
+  </section>
+
+  <!-- ============ MAAND ============ -->
+  <section class="view active" id="view-maand">
+    <div class="paginakop">
+      <h1>Maandregistratie</h1>
+      <p>Leg je zakelijke ritten per dag vast. Kilometers, dagtotalen en het declaratiebedrag worden automatisch berekend.</p>
+    </div>
+    <div class="month-bar">
+      <div class="month-nav">
+        <button id="prevMonth" title="Vorige maand">‹</button>
+        <div class="label" id="monthLabel">—</div>
+        <button id="nextMonth" title="Volgende maand">›</button>
+      </div>
+      <button class="btn sm" id="btnToday">Deze maand</button>
+      <div class="grow"></div>
+      <button class="btn sm" id="btnFillWeek" title="Vul alle werkdagen zonder ritten met je standaardrit">⚡ Werkdagen vullen</button>
+      <button class="btn sm" id="btnExportPdfTop">PDF</button>
+      <button class="btn sm" id="btnExportXlsTop">Excel</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Totaal kilometers</div><div class="v"><span id="stKm">0</span> <small>km</small></div></div>
+      <div class="stat"><div class="k">Vergoeding per km · deze maand</div><div class="v"><span aria-hidden="true">€&nbsp;</span><input type="text" id="stRate" class="rate-input" inputmode="decimal" autocomplete="off" aria-label="Vergoeding per kilometer voor deze maand" title="Tarief voor deze maand. Een wijziging hier geldt alleen voor deze maand — handig om een eerdere maand te corrigeren bij een tariefwijziging met terugwerkende kracht."></div></div>
+      <div class="stat accent"><div class="k">Declaratiebedrag</div><div class="v" id="stTotal">€ 0,00</div></div>
+      <div class="stat"><div class="k">Dagen met ritten</div><div class="v"><span id="stDays">0</span> <small>dagen</small></div></div>
+    </div>
+
+    <div class="row no-print" style="margin-bottom:10px">
+      <label class="row" style="gap:6px;font-size:13.5px;color:var(--muted);cursor:pointer">
+        <input type="checkbox" id="hideWeekend" style="width:auto"> Weekenden verbergen
+      </label>
+      <div class="grow"></div>
+      <span class="muted" style="font-size:12.5px" id="saveHint"></span>
+    </div>
+
+    <div class="day-list" id="dayList"></div>
+  </section>
+
+  <!-- ============ OVERZICHT ============ -->
+  <section class="view" id="view-overzicht">
+    <div class="paginakop no-print">
+      <h1 id="ovTitle">Maandoverzicht</h1>
+      <p>Controleer de administratie en exporteer hem naar PDF of Excel.</p>
+    </div>
+    <div class="month-bar no-print">
+      <div class="grow"></div>
+      <button class="btn sm" id="btnPrint">Afdrukken</button>
+      <button class="btn sm" id="btnExportPdf">Exporteer PDF</button>
+      <button class="btn sm primary" id="btnExportXls">Exporteer Excel</button>
+    </div>
+    <div id="ovHeader" style="margin-bottom:14px"></div>
+    <div class="tbl-wrap"><table class="grid" id="ovTable"></table></div>
+  </section>
+
+  <!-- ============ LOCATIES ============ -->
+  <section class="view" id="view-locaties">
+    <div class="paginakop">
+      <h1>Locaties</h1>
+      <p>Beheer je vertrek- en bestemmingslocaties, hun adressen en de bekende afstanden.</p>
+    </div>
+    <div class="month-bar">
+      <input type="text" id="locZoek" placeholder="Zoek op naam, plaats of postcode…" style="max-width:300px">
+      <select id="locFilter" style="max-width:190px">
+        <option value="alle">Alle locaties</option>
+        <option value="favoriet">Alleen favorieten</option>
+        <option value="gebruikt">Alleen gebruikte</option>
+        <option value="ongebruikt">Alleen ongebruikte</option>
+      </select>
+      <div class="grow"></div>
+      <span class="muted" style="font-size:12.5px" id="locTeller"></span>
+      <button class="btn primary sm" id="btnAddLoc">+ Nieuwe locatie</button>
+    </div>
+    <div id="locBalk"></div>
+    <div class="loc-list" id="locList"></div>
+  </section>
+
+  <!-- ============ INSTELLINGEN ============ -->
+  <section class="view" id="view-instellingen">
+    <div class="paginakop">
+      <h1>Instellingen</h1>
+      <p>Je gegevens, de opslaglocatie van de administratie en je voorkeuren.</p>
+    </div>
+    <div class="card" style="padding:18px;margin-bottom:16px">
+      <div class="section-title">Gegevens</div>
+      <div class="grid2">
+        <div class="field"><label>Naam</label><input type="text" id="setNaam" placeholder="Voor- en achternaam"></div>
+        <div class="field"><label>Voertuig</label>
+          <select id="setVoertuig"><option value="auto">Auto</option><option value="motor">Motor</option></select>
+        </div>
+        <div class="field"><label>Kenteken</label><input type="text" id="setKenteken" placeholder="XX-999-X"></div>
+        <div class="field"><label>Vergoeding per kilometer (€)</label><input type="number" id="setVergoeding" step="0.01" min="0">
+          <span class="muted" style="font-size:12px">Standaardtarief voor nieuwe maanden. Het tarief van een bestaande maand pas je aan bij die maand zelf (stat “Vergoeding per km · deze maand”), zodat een tariefwijziging met terugwerkende kracht per maand te corrigeren is.</span></div>
+        <div class="field"><label>Thuisadres (standaard vertrekpunt)</label>
+          <input type="text" class="combo-input" id="setThuis" data-combo="instelling" data-sleutel="thuisId" autocomplete="off" placeholder="Zoek locatie…">
+          <div id="thuisAdres"></div></div>
+        <div class="field"><label>Aantal automatische favorieten</label>
+          <input type="number" id="setAantalFav" min="1" max="30" step="1">
+          <span class="muted" style="font-size:12px">De meest gebruikte locaties van de afgelopen 6 maanden staan bovenaan in de keuzelijsten.</span></div>
+        <div class="field"><label>Afronding per rit</label>
+          <select id="setAfronding">
+            <option value="ceil">Altijd naar boven (hele km)</option>
+            <option value="round">Rekenkundig afronden</option>
+            <option value="none">Niet afronden (1 decimaal)</option>
+          </select>
+        </div>
+      </div>
+      <label class="row" style="gap:8px;margin-top:16px;font-size:13.5px;cursor:pointer;align-items:flex-start">
+        <input type="checkbox" id="setSpiegel" style="width:auto;margin-top:3px">
+        <span>Heen- en terugreis gelijk houden
+          <span class="muted" style="display:block;font-size:12.5px">Is één richting bekend, dan krijgt de andere richting hetzelfde aantal kilometers. Een waarde uit je eigen afstandentabel gaat vóór een berekende route.</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:16px">
+      <div class="section-title">Standaardrit</div>
+      <p class="muted" style="margin:0 0 12px;font-size:13.5px">Wordt gebruikt door de knop “Werkdagen vullen” en door “Standaardrit” bij een dag.</p>
+      <div class="grid2">
+        <div class="field"><label>Van</label>
+          <input type="text" class="combo-input" id="setStdVan" data-combo="instelling" data-sleutel="stdVan" autocomplete="off" placeholder="Zoek locatie…"></div>
+        <div class="field"><label>Naar</label>
+          <input type="text" class="combo-input" id="setStdNaar" data-combo="instelling" data-sleutel="stdNaar" autocomplete="off" placeholder="Zoek locatie…"></div>
+      </div>
+      <label class="row" style="gap:7px;margin-top:12px;font-size:13.5px;cursor:pointer">
+        <input type="checkbox" id="setStdRetour" style="width:auto" checked> Automatisch retour toevoegen
+      </label>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:16px" id="opslagKaart">
+      <div class="section-title">Opslaglocatie</div>
+      <div id="opslagStatus" style="margin-bottom:14px"></div>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <button class="btn sm primary" id="btnKiesBestand">Nieuw opslagbestand maken…</button>
+        <button class="btn sm" id="btnOpenBestand">Bestaand bestand openen…</button>
+        <button class="btn sm" id="btnNuOpslaan">Nu opslaan</button>
+        <button class="btn sm" id="btnHerlaadBestand">Opnieuw laden uit bestand</button>
+        <div class="grow"></div>
+        <button class="btn sm ghost" id="btnOntkoppel">Ontkoppelen</button>
+      </div>
+      <label class="row" style="gap:7px;margin-top:14px;font-size:13.5px;cursor:pointer">
+        <input type="checkbox" id="setAutoOpslaan" style="width:auto" checked> Automatisch opslaan bij elke wijziging
+      </label>
+      <p class="muted" style="margin:12px 0 0;font-size:12.5px">
+        Kies bijvoorbeeld een bestand in Documenten, op een netwerkschijf of in je OneDrive-map. Zet je het in een
+        gesynchroniseerde map, dan staat je administratie automatisch ook op je andere apparaten.
+        De browser bewaart alleen een kopie als noodback-up.
+      </p>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:16px" id="odKaart">
+      <div class="section-title">Meerdere apparaten · OneDrive</div>
+      <p class="muted" style="margin:0 0 12px;font-size:13.5px">
+        Wil je je administratie op je laptop én telefoon bijhouden, kies dan OneDrive. Je logt in met je
+        Microsoft-account; je data staat in een eigen app-map in jouw OneDrive en synct naar al je apparaten.
+        Eenmalig heb je een <strong>Client ID</strong> nodig uit een gratis Microsoft app-registratie
+        (klik op “Hoe stel ik dit in?”).
+      </p>
+      <div class="field" style="max-width:520px">
+        <label>Opslagmethode</label>
+        <select id="odModus">
+          <option value="lokaal">Dit apparaat — bestand of browser (standaard)</option>
+          <option value="onedrive">Meerdere apparaten via OneDrive</option>
+        </select>
+      </div>
+      <div id="odConfig" class="hidden" style="margin-top:12px">
+        <div class="field" style="max-width:520px">
+          <label>Microsoft Client ID</label>
+          <input type="text" id="odClientId" autocomplete="off" placeholder="bijv. 12345678-abcd-1234-…">
+          <span class="muted" style="font-size:12px">Uit je eigen Azure app-registratie. Wordt alleen in deze app op dit apparaat bewaard.</span>
+        </div>
+        <div id="odStatus" style="margin:10px 0"></div>
+        <div class="row" style="flex-wrap:wrap;gap:8px">
+          <button class="btn sm primary" id="btnOdLogin">Inloggen met Microsoft</button>
+          <button class="btn sm" id="btnOdSync">Nu synchroniseren</button>
+          <button class="btn sm ghost" id="btnOdUitloggen">Uitloggen</button>
+          <div class="grow"></div>
+          <button class="btn sm ghost" id="btnOdHelp">Hoe stel ik dit in?</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:16px">
+      <div class="section-title">Locaties en afstanden</div>
+      <p class="muted" style="margin:0 0 12px;font-size:13.5px">Neem een bestaande adressenlijst over, of
+        geef je eigen lijst door aan een collega. Alleen locaties en afstanden — je ritten blijven privé.</p>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <button class="btn sm" id="btnImportLoc">Importeren…</button>
+        <button class="btn sm" id="btnExportLoc">Exporteren</button>
+        <span class="muted" style="font-size:12.5px" id="locExportTeller"></span>
+      </div>
+    </div>
+
+    <div class="card" style="padding:18px;margin-bottom:16px">
+      <div class="section-title">Losse back-up</div>
+      <p class="muted" style="margin:0 0 12px;font-size:13.5px">Los van de opslaglocatie kun je op elk moment een kopie downloaden of terugzetten. “Opnieuw beginnen” wist ook de kopie die de browser zelf bewaart.</p>
+      <div class="row" style="flex-wrap:wrap">
+        <button class="btn sm" id="btnBackup">Back-up downloaden</button>
+        <button class="btn sm" id="btnRestore">Back-up herstellen</button>
+        <input type="file" id="restoreFile" accept="application/json" class="hidden">
+        <div class="grow"></div>
+        <button class="btn sm danger" id="btnWipe">Opnieuw beginnen (alles wissen)</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============ HANDLEIDING ============ -->
+  <section class="view" id="view-handleiding">
+    <div class="paginakop no-print">
+      <h1>Handleiding</h1>
+      <p>Alles over het invullen, controleren en exporteren van je kilometerdeclaratie.</p>
+    </div>
+    <div class="month-bar no-print">
+      <input type="text" id="docZoek" placeholder="Zoek in de handleiding…" style="max-width:320px">
+      <span class="muted" style="font-size:12.5px" id="docTeller"></span>
+      <div class="grow"></div>
+      <button class="btn sm" id="btnDocPrint">Afdrukken</button>
+    </div>
+    <div class="doc-wrap">
+      <nav class="doc-inhoud no-print" id="docInhoud"></nav>
+      <article class="doc card" id="docTekst">
+<h1>Handleiding</h1>
+<p>Deze handleiding hoort bij de app en zit in hetzelfde bestand: je kunt hem altijd openen via <strong>Handleiding</strong> in de linkerbalk, ook zonder internet.</p>
+<h2 id="hl-in-het-kort">In het kort</h2>
+<p>De app vervangt de Excel-rittenadministratie. Je kiest per dag je bestemmingen, de kilometers worden automatisch ingevuld, en aan het eind van de maand exporteer je een PDF of Excel-bestand.</p>
+<p>Drie dingen om te weten voordat je begint:</p>
+<ul>
+<li>De app start <strong>helemaal leeg</strong>. Er staan geen namen, adressen of ritten van iemand anders in het bestand. Alles wat je invult is van jou.</li>
+<li>Kies eenmalig een <strong>opslagbestand</strong> op je computer. Zonder dat staat je administratie alleen in deze browser.</li>
+<li>Alles rekent zichzelf uit: dagtotaal, maandtotaal en het declaratiebedrag.</li>
+</ul>
+<h2 id="hl-de-app-met-meerdere-personen-gebruiken">De app met meerdere personen gebruiken</h2>
+<p>Iedereen gebruikt een eigen kopie van <code>Kilometerdeclaratie.html</code> en een eigen opslagbestand. Er zit geen gedeelde opslag in en er gaat niets naar een server: jouw ritten blijven op jouw computer.</p>
+<p>Een collega laten meedoen gaat zo:</p>
+<ol>
+<li>Geef de collega het bestand <code>Kilometerdeclaratie.html</code>, of laat hem het van de gedeelde schijf kopiëren.</li>
+<li>De collega opent het en doorloopt het welkomstscherm met zijn eigen naam, kenteken en thuisadres.</li>
+<li>De collega kiest zijn eigen opslagbestand — dus niet dat van jou.</li>
+</ol>
+<p>Adressen en afstanden mag je wél delen: bij <strong>Instellingen → Locaties en afstanden → Exporteren</strong> maak je een bestand met alleen de locaties en de bekende afstanden, zonder ritten en zonder persoonlijke gegevens. Je collega leest dat in met <strong>Importeren</strong>.</p>
+<p>Wil je zelf op twee computers werken? Gebruik dan hetzelfde opslagbestand in een gedeelde map, of kopieer het bestand mee.</p>
+<h2 id="hl-aan-de-slag-het-welkomstscherm">Aan de slag: het welkomstscherm</h2>
+<p>De eerste keer dat je de app opent, verschijnt een welkomstscherm met drie stappen.</p>
+<p><strong>Stap 1 · Jouw gegevens</strong> — naam, auto of motor, kenteken en de vergoeding per kilometer. Die komen op je export terecht en bepalen het declaratiebedrag.</p>
+<p><strong>Stap 2 · Thuisadres</strong> — je vaste vertrekpunt. Vanaf hier worden ritten geketend en werkt de knop "Rit naar huis". Je kunt het adres opzoeken door een deel ervan in te typen.</p>
+<p><strong>Stap 3 · Opslagbestand</strong> — zie hieronder.</p>
+<p>Daarnaast kun je optioneel een bestaande <strong>lijst met locaties en afstanden</strong> importeren, bijvoorbeeld uit een spreadsheet die je al had. Dat scheelt later opzoekwerk. Je kunt dit ook overslaan en locaties gewoon toevoegen terwijl je ritten invult.</p>
+<p>Met <strong>Aan de slag</strong> rond je het scherm af; met <strong>Later instellen</strong> sla je het over en vul je alles later bij Instellingen aan.</p>
+<h3 id="hl-locaties-en-afstanden-importeren">Locaties en afstanden importeren</h3>
+<p>Bij <strong>Instellingen → Locaties en afstanden → Importeren</strong> plak je een tabel of kies je een bestand. De tabel heeft vijf kolommen, gescheiden door een tab of een puntkomma:</p>
+<div class="doc-tabel"><table><thead><tr><th>Naam van</th><th>Adres van</th><th>Naam naar</th><th>Adres naar</th><th>Km</th></tr></thead><tbody><tr><td>Thuis</td><td>1234 AB 12, Utrecht</td><td>Hoofdkantoor</td><td>5678 CD 3, Amersfoort</td><td>44</td></tr></tbody></table></div>
+<p>Een kopregel wordt vanzelf overgeslagen. Adressen mogen op verschillende manieren geschreven zijn (<code>1234 AB 12, Plaats</code>, <code>Straat 12, 1234 AB Plaats</code>, <code>1234 AB Plaats</code>). Locaties worden herkend aan postcode, huisnummer en plaats, dus dubbel importeren levert geen dubbele locaties op. Elke afstand wordt in beide richtingen opgeslagen.</p>
+<p>Ook een eerder geëxporteerd JSON-bestand kun je hier inlezen.</p>
+<h2 id="hl-opslagbestand-kiezen">Opslagbestand kiezen</h2>
+<p>Bij de eerste keer openen verschijnt bovenaan een balk met twee keuzes.</p>
+<ul>
+<li><strong>Nieuw bestand maken…</strong> — je wijst een plek en naam aan, bijvoorbeeld <code>Documenten\Kilometerdeclaratie.json</code>. Vanaf dat moment schrijft de app elke wijziging daar automatisch naartoe.</li>
+<li><strong>Bestaand bestand openen…</strong> — je hebt al een administratiebestand, bijvoorbeeld op een andere computer gemaakt of teruggezet uit een back-up.</li>
+</ul>
+<p>Zet je het bestand in een OneDrive- of netwerkmap, dan staat je administratie automatisch ook op je andere apparaten.</p>
+<p>Linksonder in de balk zie je de opslagstatus. Groen betekent opgeslagen; klik erop om naar de instellingen te springen.</p>
+<p><strong>Bij een volgende keer openen</strong> vraagt Chrome eenmalig opnieuw toestemming voor dat bestand. Klik op <strong>Verbinden</strong> in de balk. Wil je naar een ander bestand overstappen, gebruik dan <strong>Ander bestand openen…</strong> in diezelfde balk.</p>
+<p>Wijs je bij <em>Nieuw bestand maken</em> een bestand aan waar al een administratie in staat, dan waarschuwt de app en kun je kiezen tussen die administratie openen, overschrijven of annuleren. Er gaat dus nooit ongemerkt iets verloren.</p>
+<h2 id="hl-een-maand-invullen">Een maand invullen</h2>
+<p>Kies de maand met de pijlen linksboven; <strong>Deze maand</strong> springt terug naar vandaag. Klik op een dag om die open te klappen.</p>
+<p>Binnen een dag heb je vier knoppen:</p>
+<ul>
+<li><strong>+ Rit toevoegen</strong> — een lege rit. Het vertrekpunt is automatisch de bestemming van de vorige rit.</li>
+<li><strong>🏠 Rit naar huis</strong> — sluit de dag af met een rit naar je thuisadres. Eindigt de dag daar al, dan is de knop uitgeschakeld.</li>
+<li><strong>Standaardrit</strong> — zet je vaste rit heen en terug neer (in te stellen bij Instellingen).</li>
+<li><strong>Vorige rijdag kopiëren</strong> — neemt de ritten over van de laatste dag met ritten.</li>
+</ul>
+<p>Bovenaan de maand staat <strong>⚡ Werkdagen vullen</strong>: die zet de standaardrit in één keer op alle werkdagen die nog leeg zijn. Dagen met een opmerking of met ritten blijven ongemoeid.</p>
+<p>Dagen zonder zakelijke ritten krijgen alleen een opmerking. Met één klik op <em>Thuiswerken</em>, <em>Vakantie</em>, <em>Verlof</em>, <em>Ziek</em> of <em>Feestdag</em> staat die er; je kunt ook zelf iets typen.</p>
+<p>Met <strong>Weekenden verbergen</strong> houd je de lijst kort.</p>
+<h2 id="hl-ritten-en-afstanden">Ritten en afstanden</h2>
+<p>Elke rit heeft een vertrekpunt, een bestemming en een aantal kilometers. Je kunt onbeperkt ritten per dag toevoegen.</p>
+<h3 id="hl-locatie-kiezen">Locatie kiezen</h3>
+<p>De keuzevelden zijn zoekvelden. Typ een deel van de naam, het adres of de plaats; de best passende locatie staat bovenaan en kies je met <strong>Enter</strong>. Zoeken werkt op elk deel van de naam, niet alleen het begin:</p>
+<div class="doc-tabel"><table><thead><tr><th>je typt</th><th>je krijgt</th></tr></thead><tbody><tr><td><code>zuid</code></td><td>Klant Rotterdam <strong>Zuid</strong></td></tr><tr><td><code>klant zuid</code></td><td>losse termen mogen door de naam heen staan</td></tr><tr><td><code>hoofdk</code></td><td>Hoofdkantoor</td></tr><tr><td><code>gouda</code></td><td>alles met Gouda in het adres</td></tr></tbody></table></div>
+<p>Met de pijltjestoetsen loop je door de lijst, <strong>Escape</strong> annuleert, en onderaan staat altijd <strong>Nieuwe locatie toevoegen…</strong>. Typ je iets wat nergens op past en klik je weg, dan valt het veld terug op je vorige keuze.</p>
+<h3 id="hl-waar-komen-de-kilometers-vandaan">Waar komen de kilometers vandaan?</h3>
+<p>Onder elk getal staat een klein label met de herkomst:</p>
+<div class="doc-tabel"><table><thead><tr><th>label</th><th>betekenis</th></tr></thead><tbody><tr><td>tabel</td><td>overgenomen uit je eigen afstandentabel</td></tr><tr><td>route</td><td>berekende route over de weg via OpenStreetMap</td></tr><tr><td>retour</td><td>gelijkgetrokken met dezelfde rit in omgekeerde richting</td></tr><tr><td>handmatig</td><td>zelf ingevuld; wordt niet automatisch herberekend</td></tr></tbody></table></div>
+<p>Je kunt elk getal overschrijven; het krijgt dan het label <em>handmatig</em> en blijft staan. Met <strong>opnieuw berekenen</strong> achter de regel laat je de app het alsnog zelf bepalen.</p>
+<p>Staat een traject niet in je tabel, dan zoekt de app de adressen op en berekent de route over de weg. Dat resultaat wordt bewaard, dus dat gebeurt maar één keer per traject.</p>
+<h3 id="hl-heen-en-terug-verschillen-soms">Heen en terug verschillen soms</h3>
+<p>Een routeplanner berekent elke richting apart over het echte wegennet, en met <em>altijd naar boven afronden</em> wordt een verschil van enkele honderden meters al een hele kilometer. De instelling <strong>Heen- en terugreis gelijk houden</strong> (standaard aan) voorkomt dat: is één richting bekend, dan neemt de andere die over. Zijn beide bekend, dan wint de betrouwbaarste bron — je eigen tabel gaat vóór een berekende route.</p>
+<h3 id="hl-ritten-verslepen">Ritten verslepen</h3>
+<p>Het genummerde bolletje links van een rit is de sleepgreep. Sleep de rit naar een andere plek in de dag; bij loslaten wordt de keten opnieuw gelegd, zodat elk vertrekpunt weer de bestemming van de rit erboven is. De eerste rit blijft altijd bovenaan.</p>
+<h2 id="hl-controles">Controles</h2>
+<p>De app kijkt per dag mee en kleurt wat aandacht vraagt.</p>
+<ul>
+<li><strong>Rood</strong> — een rit waarin het vertrekpunt of de bestemming ontbreekt, of waarvan de afstand niet bepaald kon worden. De dag krijgt een rood label in de kop.</li>
+<li><strong>Oranje</strong> — de laatste bestemming is niet je thuisadres. Die locatie wordt oranje weergegeven, met het label <em>eindigt niet thuis</em>. De knop <strong>🏠 Rit naar huis</strong> lost dat in één klik op.</li>
+</ul>
+<p>Lukt een afstand niet, dan staat er precies welke locatie het probleem is, met een link om dat adres aan te vullen en het daarna opnieuw te proberen. Meestal ontbreekt er een huisnummer of een postcode.</p>
+<p>Er wordt niets geblokkeerd: de controles zijn er om te signaleren.</p>
+<h2 id="hl-locaties-en-favorieten">Locaties en favorieten</h2>
+<p>Op het tabblad <strong>Locaties</strong> beheer je alle vertrek- en bestemmingslocaties.</p>
+<ul>
+<li><strong>Zoeken</strong> op naam, plaats of postcode, en een <strong>filter</strong> op alle, favorieten, gebruikte of ongebruikte locaties.</li>
+<li><strong>Bewerken</strong> opent naam en adres. Je kunt een adres opzoeken door te typen in het zoekveld bovenin het venster.</li>
+<li><strong>Als standaard</strong> maakt een locatie je thuisadres.</li>
+<li>Het 📌-knopje zet een locatie handmatig bovenaan in de keuzelijsten.</li>
+</ul>
+<h3 id="hl-favorieten-gaan-vanzelf">Favorieten gaan vanzelf</h3>
+<p>De meest gebruikte locaties van de <strong>afgelopen zes maanden</strong> staan bovenaan in elke keuzelijst onder <em>Meest gebruikt</em>. Die lijst schuift dus mee met hoe je werkelijk rijdt. Het aantal stel je in bij Instellingen (standaard 8). Zolang je nog geen ritten hebt ingevoerd is de lijst leeg; zet dan zelf je vaste adressen bovenaan met het 📌-knopje.</p>
+<h3 id="hl-locaties-opruimen">Locaties opruimen</h3>
+<p>Elke kaart heeft een selectievakje. Zodra je er één aanvinkt verschijnt een balk met het aantal geselecteerde locaties, hoeveel daarvan in ritten voorkomen, <strong>Alle zichtbare selecteren</strong>, <strong>Selectie wissen</strong> en de verwijderknop. Je selectie blijft staan als je de zoekterm wijzigt.</p>
+<p>Zitten er locaties in je selectie die al gebruikt zijn, dan krijg je de keuze tussen <em>alleen de ongebruikte</em> verwijderen of alles. Bij het verwijderen gaan ook de bekende afstanden van die locaties weg.</p>
+<p>De snelste opruimactie: filter op <strong>Alleen ongebruikte</strong>, klik <strong>Alle zichtbare selecteren</strong> en verwijder.</p>
+<h2 id="hl-exporteren">Exporteren</h2>
+<p>Op het tabblad <strong>Overzicht</strong> zie je de maand in tabelvorm, met bovenaan je naam, kenteken, totalen en het declaratiebedrag.</p>
+<ul>
+<li><strong>Exporteer PDF</strong> — staand A4 in de huisstijl, met iedere rit op een eigen regel. Datum, dag, opmerking en dagtotaal lopen samengevoegd over de regels van dezelfde dag. Een normale maand past op één pagina.</li>
+<li><strong>Exporteer Excel</strong> — dezelfde kolomopzet als de oude rittenadministratie, met de bestemmingen naast elkaar per dag.</li>
+<li><strong>Afdrukken</strong> — via het printvenster van je browser, ook bruikbaar als "Opslaan als PDF".</li>
+</ul>
+<p>De bestandsnaam bevat automatisch de maand en je naam, bijvoorbeeld <code>202606_HansdeRooij_rittenadministratie.pdf</code>.</p>
+<h2 id="hl-instellingen">Instellingen</h2>
+<div class="doc-tabel"><table><thead><tr><th>onderdeel</th><th>waarvoor</th></tr></thead><tbody><tr><td>Naam, voertuig, kenteken</td><td>komen op de export terecht</td></tr><tr><td>Vergoeding per kilometer</td><td>bepaalt het declaratiebedrag</td></tr><tr><td>Thuisadres</td><td>standaard vertrekpunt en doel van "Rit naar huis"; het volledige adres staat eronder</td></tr><tr><td>Aantal automatische favorieten</td><td>hoeveel locaties bovenaan de keuzelijsten staan</td></tr><tr><td>Afronding per rit</td><td>naar boven op hele km (standaard), rekenkundig, of niet afronden</td></tr><tr><td>Heen- en terugreis gelijk houden</td><td>voorkomt verschil tussen heen en terug</td></tr><tr><td>Standaardrit</td><td>wordt gebruikt door "Standaardrit" en "Werkdagen vullen"</td></tr><tr><td>Opslaglocatie</td><td>het bestand waarin alles wordt bewaard</td></tr><tr><td>Locaties en afstanden</td><td>een adressenlijst importeren of doorgeven aan een collega</td></tr><tr><td>Losse back-up</td><td>een kopie downloaden of terugzetten</td></tr></tbody></table></div>
+<p>Let op bij het wijzigen van een adres: alleen postcode, huisnummer en plaats bepalen wáár een locatie ligt. Een straatnaam aanvullen laat de bekende afstanden met rust. Verhuist een locatie echt, dan vraagt de app of de opgeslagen afstanden opnieuw berekend moeten worden.</p>
+<h2 id="hl-opslag-back-up-en-meerdere-apparaten">Opslag, back-up en meerdere apparaten</h2>
+<p>Alles wat je invult — instellingen, locaties, afstanden en ritten — zit in één JSON-bestand. Alleen de schakelaar <em>Automatisch opslaan</em> en de verwijzing naar het gekozen bestand blijven per apparaat in de browser staan, samen met een noodkopie voor als het bestand even niet bereikbaar is.</p>
+<p><strong>Naar een andere computer:</strong> kopieer het HTML-bestand en het JSON-bestand, open de app daar en kies <em>Bestaand bestand openen…</em>.</p>
+<p><strong>De kopie in de browser:</strong> naast je opslagbestand houdt de browser een eigen kopie bij, zodat er niets verloren gaat als het bestand even niet bereikbaar is. Die kopie hoort bij de browser, niet bij een bepaald bestand — open je een andere versie van de app in dezelfde browser, dan zie je dezelfde gegevens terug. Met <strong>Instellingen → Opnieuw beginnen (alles wissen)</strong> wis je die kopie en ontkoppel je het opslagbestand; het bestand zelf blijft gewoon staan.</p>
+<p><strong>Back-up:</strong> bij Instellingen kun je op elk moment een kopie downloaden en later terugzetten.</p>
+<p><strong>Bestand buiten de app gewijzigd?</strong> Bijvoorbeeld door synchronisatie of bewerking op een ander apparaat. De app merkt dat en laat je kiezen tussen dat bestand laden of je eigen versie opslaan.</p>
+<p>Rechtstreeks naar een bestand schrijven werkt in Chrome en Edge op de computer. In Safari en Firefox valt de app terug op de browserkopie plus <em>Back-up downloaden</em>.</p>
+<h2 id="hl-problemen-oplossen">Problemen oplossen</h2>
+<p><strong>"Afstand niet te bepalen"</strong> — de melding noemt welke locatie het is. Vul het adres aan (postcode én huisnummer) en klik op <em>opnieuw proberen</em>. Zonder internet kunnen alleen trajecten worden bepaald die al bekend zijn.</p>
+<p><strong>Heen en terug verschillen 1 km</strong> — zet <em>Heen- en terugreis gelijk houden</em> aan bij Instellingen, of typ het juiste getal handmatig.</p>
+<p><strong>De app is leeg na het openen</strong> — waarschijnlijk is de verbinding met het opslagbestand nog niet hersteld. Klik op <strong>Verbinden</strong> in de balk bovenaan, of open het bestand via <em>Bestaand bestand openen…</em>.</p>
+<p><strong>Ik zie gegevens terwijl ik nog geen opslagbestand heb gekoppeld</strong> — dat is de kopie die de browser zelf bewaart. De browser bewaart die kopie per browser, niet per bestand: alle lokaal geopende versies van de app delen dezelfde opslagruimte. Open je dus een nieuwere versie van <code>Kilometerdeclaratie.html</code> in dezelfde browser, dan ziet die de gegevens van de vorige versie staan. De balk bovenaan meldt dat ook. Je hebt drie keuzes: <strong>Bestaand bestand openen…</strong> om verder te gaan met je eigen bestand, <strong>Nieuw bestand maken…</strong> om deze gegevens in een nieuw bestand te zetten, of <strong>Opnieuw beginnen</strong> om met een lege administratie te starten. Een collega die de app op zijn eigen computer opent begint altijd leeg — die browser heeft immers nog geen kopie.</p>
+<p><strong>Een locatie staat dubbel in de lijst</strong> — verwijder de ongebruikte met de selectievakjes op het tabblad Locaties.</p>
+<p><strong>Het welkomstscherm is weg maar ik heb niets ingevuld</strong> — alles uit dat scherm staat ook bij Instellingen: naam, kenteken, vergoeding, thuisadres, opslagbestand en het importeren van locaties.</p>
+<p><strong>Het versienummer klopt niet met wat je verwacht</strong> — klik linksonder op het versienummer voor het volledige overzicht van wijzigingen.</p>
+<h2 id="hl-versienummers">Versienummers</h2>
+<p>Het versienummer staat linksonder in de balk; klikken opent <em>Over deze app</em> (onder Hulp in het menu) met de datum en alle wijzigingen. De nummering loopt zo:</p>
+<div class="doc-tabel"><table><thead><tr><th>soort wijziging</th><th>ophoging</th><th>voorbeeld</th></tr></thead><tbody><tr><td>klein</td><td>+0,01</td><td>2.00 → 2.01</td></tr><tr><td>middelgroot</td><td>naar de eerstvolgende tiende</td><td>2.01 → 2.10</td></tr><tr><td>groot</td><td>naar het eerstvolgende hele nummer</td><td>2.10 → 3.00</td></tr></tbody></table></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ NIEUWSBERICHTEN ============ -->
+  <section class="view" id="view-nieuws">
+    <div class="paginakop">
+      <h1>Nieuwsberichten</h1>
+      <p>Berichten over nieuwe functionaliteit. Je kunt ze hier opnieuw lezen.</p>
+    </div>
+    <div class="card" style="padding:18px" id="berichtenKaart">
+      <div id="berichtenLijst"></div>
+    </div>
+  </section>
+
+  <!-- ============ OVER DEZE APP ============ -->
+  <section class="view" id="view-over">
+    <div class="paginakop">
+      <h1>Over deze app</h1>
+      <p>Versie-informatie en het overzicht van alle wijzigingen.</p>
+    </div>
+    <div class="card" style="padding:18px" id="overKaart">
+      <div class="row" style="gap:10px;margin-bottom:12px">
+        <div style="font-size:26px;font-weight:700;letter-spacing:-.02em" id="overVersie">v—</div>
+        <span class="badge" id="overDatum"></span>
+      </div>
+      <p class="muted" style="margin:0 0 6px;font-size:13.5px">
+        Afstanden worden berekend met OpenStreetMap (Nominatim voor adressen, OSRM voor routeafstand over de weg).
+        Er is een internetverbinding nodig om nieuwe afstanden op te halen; eenmaal berekende afstanden worden bewaard en
+        werken daarna ook offline.
+      </p>
+      <div class="section-title" style="margin:20px 0 10px">Wijzigingen</div>
+      <div id="overHistorie"></div>
+      <p class="muted" style="margin:14px 0 0;font-size:12.5px" id="overRegels"></p>
+    </div>
+  </section>
+</main>
+
+<div id="comboPaneel" class="combo-paneel hidden"></div>
+<div id="modalHost"></div>
+<div id="toasts"></div>
+
+<script>{{SCRIPT}}</script>
+</body>
+</html>
