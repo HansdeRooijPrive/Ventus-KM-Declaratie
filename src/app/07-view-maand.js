@@ -206,8 +206,17 @@ $('#dayList').addEventListener('click', async ev => {
   const i = actEl.dataset.i != null ? +actEl.dataset.i : null;
 
   if (act === 'toggle') {
-    if (ui.open.has(ds)) ui.open.delete(ds); else ui.open.add(ds);
-    tekenDag(ds);
+    if (ui.open.has(ds)) {
+      ui.open.delete(ds);
+      tekenDag(ds);
+    } else {
+      // Accordeon: open deze dag en klap eventueel eerder geopende dagen weer in
+      const eerder = [...ui.open];
+      ui.open.clear();
+      ui.open.add(ds);
+      eerder.forEach(d => { if (d !== ds) tekenDag(d); });
+      tekenDag(ds);
+    }
     return;
   }
   const dag = getDag(ui.ym, ds, true);

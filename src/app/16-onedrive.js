@@ -244,6 +244,6 @@ async function odInit() {
     }
   }
   odTekenStatus();
-  if (kwamTerug) gaNaar('instellingen');
+  if (kwamTerug) gaNaar('maand');   // na inloggen direct naar Maand om te kunnen invoeren
 }
 
