@@ -1,0 +1,21 @@
+name: Verify build
+
+# Controleert bij elke push dat index.html overeenkomt met de bronbestanden in src/.
+# Faalt als iemand src/ heeft aangepast maar index.html niet opnieuw heeft gebouwd.
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: index.html == build van src/
+        run: python build.py --check

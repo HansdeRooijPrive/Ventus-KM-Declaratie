@@ -1,0 +1,6 @@
+# De Python-build (build.py) voegt src/ samen tot index.html. Forceer LF voor
+# deze bestanden zodat de build op Windows én Linux (GitHub Actions) exact
+# hetzelfde resultaat geeft, ongeacht core.autocrlf.
+index.html text eol=lf
+build.py    text eol=lf
+src/**      text eol=lf
