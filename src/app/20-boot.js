@@ -27,8 +27,10 @@ if (!opslagOk) {
 // Nog niets ingericht? Dan eerst het welkomstscherm
 if (!D.ingericht && !D.locaties.length && !(D.settings.naam || '').trim()) gaNaar('welkom');
 
-// Nieuwsberichten tonen — niet bovenop het welkomstscherm
-if (ui.view !== 'welkom') toonBerichten();
+// Nieuwsberichten tonen — niet bovenop het welkomstscherm.
+// In OneDrive-modus regelt odInit dit (ná laden, of overslaan als er eerst
+// ingelogd moet worden), zodat nieuws niet stapelt met het inlogscherm.
+if (ui.view !== 'welkom' && D.settings.opslagModus !== 'onedrive') toonBerichten();
 
 // Open vandaag als die in de huidige maand valt
 const vandaag = new Date();

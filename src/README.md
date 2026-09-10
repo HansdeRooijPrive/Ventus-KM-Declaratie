@@ -31,6 +31,7 @@ door een bestand met het juiste volgnummer (bijv. `21-...js`) neer te zetten;
 
 ## Modules
 
+- `00-versie` `APP_VERSIE` (versienummer + wijzigingslijst), global vóór de IIFE
 - `01-core` constanten, opslag-object, `save()`, datamodel-init
 - `02-helpers` algemene helpers + locatie-helpers
 - `03-favorieten` automatische favorieten

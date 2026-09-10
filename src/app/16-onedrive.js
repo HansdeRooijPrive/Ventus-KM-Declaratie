@@ -206,6 +206,27 @@ function odToonHelp() {
   m.host.addEventListener('click', e => { if (e.target.closest('[data-x]')) m.close(); });
 }
 
+/* Direct inlogscherm bij het opstarten wanneer OneDrive-opslag is gekozen maar
+   de gebruiker (nog) niet is ingelogd bij Microsoft. */
+function odLoginPrompt() {
+  const m = openModal(
+    '<header><h3>Inloggen bij OneDrive</h3></header>' +
+    '<div class="body">' +
+    '<p style="margin:0 0 10px">Je administratie staat in <strong>OneDrive</strong>. Log in met je ' +
+    'Microsoft-account om je gegevens te laden en te synchroniseren tussen je apparaten.</p>' +
+    '<p class="muted" style="margin:0;font-size:13px">Kies je “Later”, dan werk je voorlopig met wat er in ' +
+    'deze browser staat; je kunt altijd later inloggen via Instellingen.</p>' +
+    '</div>' +
+    '<footer><button class="btn" data-x="later">Later</button>' +
+    '<button class="btn primary" data-x="login">Inloggen met Microsoft</button></footer>');
+  m.host.addEventListener('click', e => {
+    const b = e.target.closest('[data-x]');
+    if (!b) return;
+    m.close();
+    if (b.dataset.x === 'login') odLogin();
+  });
+}
+
 /* opstart: token laden, eventuele inlog-terugkeer afhandelen, en bij OneDrive-modus binnenhalen */
 async function odInit() {
   OD.clientId = D.settings.odClientId || '';
@@ -213,8 +234,14 @@ async function odInit() {
   const kwamTerug = await odAfhandelenRedirect();
   if (D.settings.opslagModus === 'onedrive') {
     opslag.naam = 'OneDrive · ' + OD.bestand;
-    if (await odGeldigToken()) await odTrekBinnen(true);
-    else zetStatus('verbinden');
+    if (await odGeldigToken()) {
+      await odTrekBinnen(true);
+      if (!kwamTerug && ui.view !== 'welkom') toonBerichten();   // nieuws pas ná het laden
+    } else {
+      zetStatus('verbinden');
+      if (OD.clientId) odLoginPrompt();                          // niet ingelogd → direct inlogscherm
+      else if (ui.view !== 'welkom') toonBerichten();            // geen Client ID: inloggen kan (nog) niet
+    }
   }
   odTekenStatus();
   if (kwamTerug) gaNaar('instellingen');
