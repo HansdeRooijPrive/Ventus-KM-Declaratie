@@ -40,12 +40,27 @@ if (nowYm() === ui.ym) {
   tekenDag(ds);
 }
 
+// Mobiel: bij de eerste aanraking naar fullscreen in de browser zelf, waar dat kan.
+// (iOS Safari ondersteunt dit niet en negeert het; daar werkt "zet op startscherm".)
+(function () {
+  const el = document.documentElement;
+  const staStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  const mobiel = window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+  if (staStandalone || !mobiel || !el.requestFullscreen) return;
+  document.addEventListener('pointerdown', function eersteTik() {
+    try { const p = el.requestFullscreen(); if (p && p.catch) p.catch(function () {}); } catch (e) { /* niet ondersteund */ }
+  }, { once: true });
+})();
+
 window.__km = {
   get D() { return D; },
   save, opslag, favorieten, comboZoek, importeer: verwerkImport,
   kies: kiesOpslagBestand, openen: openOpslagBestand,
   schrijf: schrijfBestand, lees: laadUitBestand,
   nieuws: toonBerichten, berichten: BERICHTEN,
+  // Testhaakje: pure functies bereikbaar maken voor de geautomatiseerde tests (tests/test_pure.py)
+  fns: { afrond, haversine, locKort, locNaam, locLabel, comboZoek, dagKm, maandKm, paarAfstand,
+         nominatimQuery, daysInMonth, shiftYm, ymLabel, normPostcode, parseAdres, migreer, berichtGelezen },
   koppel: async h => { opslag.handle = h; opslag.naam = h.name; opslag.negeerExtern = true; try { await idbZet(IDB_KEY, h); } catch (e) {} return schrijfBestand(); }
 };
 })();
