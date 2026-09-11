@@ -1,0 +1,6 @@
+# Geautomatiseerde tests (zie tests/). Alleen Python nodig, geen Node.
+#   pip install -r requirements-test.txt
+#   python -m playwright install chromium
+#   pytest
+pytest>=8
+playwright>=1.44
