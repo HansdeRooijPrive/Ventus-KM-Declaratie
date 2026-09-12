@@ -51,6 +51,8 @@ jobs:
             -e 's/--merk:#cc0000;/--merk:#0f7a45;/' \
             -e 's/--merk-donker:#a80000;/--merk-donker:#0b5c34;/' \
             -e 's/--merk-licht:#e02020;/--merk-licht:#1a9d5c;/' \
+            -e 's/%23cc0000/%230f7a45/g' \
+            -e 's/content="#cc0000"/content="#0f7a45"/' \
             -e "s/const STORE_KEY = 'kmdeclaratie.v1';/const STORE_KEY = 'kmdeclaratie.test.v1';/" \
             -e "s/const IDB_DB = 'kilometerdeclaratie',/const IDB_DB = 'kilometerdeclaratie-test',/" \
             -e "s/bestand: 'kilometerdeclaratie.json',/bestand: 'kilometerdeclaratie-test.json',/" \
@@ -60,6 +62,8 @@ jobs:
           grep -qF "kmdeclaratie.test.v1" dist/test/index.html || { echo "::error::Test STORE_KEY isolatie mislukt"; exit 1; }
           grep -qF "kilometerdeclaratie-test'," dist/test/index.html || { echo "::error::Test IndexedDB isolatie mislukt"; exit 1; }
           grep -qF "kilometerdeclaratie-test.json" dist/test/index.html || { echo "::error::Test OneDrive-bestand isolatie mislukt"; exit 1; }
+          # Groen autootje voor test: het app-icoon moet herkleurd zijn (anders lijkt test op prod).
+          grep -qF "%230f7a45" dist/test/index.html || { echo "::error::Test-icoon (groen autootje) niet toegepast"; exit 1; }
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

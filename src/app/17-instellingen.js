@@ -1,6 +1,35 @@
 /* ============================================================
    Instellingen
    ============================================================ */
+
+/* App installeren (PWA). We vangen het browser-installatie-event op en tonen bij
+   Instellingen een eigen knop, zodat je niet afhankelijk bent van de eenmalige
+   prompt die de browser zelf laat zien. */
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installPrompt = e; tekenInstall(); });
+window.addEventListener('appinstalled', function () { installPrompt = null; tekenInstall(); });
+function appGeinstalleerd() {
+  return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+}
+function tekenInstall() {
+  const vak = $('#installVak');
+  if (!vak) return;
+  if (appGeinstalleerd()) {
+    vak.innerHTML = '<p class="muted" style="margin:0;font-size:13px">De app is op dit apparaat geïnstalleerd.</p>';
+  } else if (installPrompt) {
+    vak.innerHTML = '<button class="btn sm primary" id="btnInstall">📲 App installeren op dit apparaat</button>';
+    $('#btnInstall').onclick = async function () {
+      const e = installPrompt; installPrompt = null;   // de prompt is eenmalig bruikbaar
+      try { e.prompt(); await e.userChoice; } catch (err) { /* geannuleerd of niet ondersteund */ }
+      tekenInstall();
+    };
+  } else {
+    vak.innerHTML = '<p class="muted" style="margin:0;font-size:13px">Nog geen automatische installatie beschikbaar (bijv. al geïnstalleerd, of iOS). ' +
+      'Je kunt de app altijd installeren via het browsermenu: Chrome/Edge (Android) → ⋮ → “App installeren” of “Toevoegen aan startscherm”; ' +
+      'iPhone (Safari) → Deel → “Zet op beginscherm”.</p>';
+  }
+}
+
 function vulSelects() {
   const s = D.settings;
   [['#setThuis', s.thuisId], ['#setStdVan', s.stdVan], ['#setStdNaar', s.stdNaar]].forEach(([sel, id]) => {
@@ -52,6 +81,7 @@ function vulInstellingen() {
   vulSelects();
   tekenOpslag();
   odTekenStatus();
+  tekenInstall();
 }
 function bindInstellingen() {
   const s = () => D.settings;

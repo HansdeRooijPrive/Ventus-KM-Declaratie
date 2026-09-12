@@ -45,14 +45,24 @@ def test_deploy_isolatie_sed_patronen_matchen():
         "const IDB_DB = 'kilometerdeclaratie',": "const IDB_DB = 'kilometerdeclaratie-test',",
         "bestand: 'kilometerdeclaratie.json',": "bestand: 'kilometerdeclaratie-test.json',",
     }
-    for oud in vervang:
+    # sed-vervangingen met de globale (g) vlag: icoon-/manifestkleur op meerdere plekken
+    vervang_alle = {
+        "%23cc0000": "%230f7a45",              # favicon + apple-touch-icon + manifest-icoon + manifest theme_color
+        'content="#cc0000"': 'content="#0f7a45"',  # theme-color meta
+    }
+    for oud in list(vervang) + list(vervang_alle):
         assert oud in html, "sed-patroon niet gevonden in index.html: %r" % oud
     testbuild = html
     for oud, nieuw in vervang.items():
         testbuild = testbuild.replace(oud, nieuw)
+    for oud, nieuw in vervang_alle.items():
+        testbuild = testbuild.replace(oud, nieuw)
     assert "kmdeclaratie.test.v1" in testbuild
     assert "kilometerdeclaratie-test.json" in testbuild
     assert "#0f7a45" in testbuild
+    # het test-icoon (groen autootje) staat in de testbuild en het rode prod-icoon is weg
+    assert "%230f7a45" in testbuild
+    assert "%23cc0000" not in testbuild
 
 
 def test_boot_zonder_console_fouten(app):

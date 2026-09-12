@@ -38,6 +38,7 @@ De tests draaien ook automatisch bij elke push via `.github/workflows/tests.yml`
 | 15 | Nieuwsbericht verschijnt niet / "als gelezen" werkt niet | `test_nieuws_popup_en_als_gelezen` |
 | 16 | OneDrive-gebruiker ziet bij opstart geen inlogscherm (v3.17) | `test_onedrive_inlogscherm_bij_opstart` |
 | 17 | Meerdere dagen tegelijk open → onoverzichtelijk; vorige dag klapt niet in (v3.18) | `test_accordeon_dagen` |
+| 17b | Gebruiker kan de app niet installeren na het wegklikken van de browser-melding (v3.20) | `test_install_optie_bij_instellingen` |
 
 ## Tier 3 — build & integriteit (`test_build.py`)
 
@@ -48,6 +49,7 @@ De tests draaien ook automatisch bij elke push via `.github/workflows/tests.yml`
 | 20 | Productie gebruikt per ongeluk test-opslagsleutels | `test_prod_index_gebruikt_prod_sleutels` |
 | 21 | Test- en prod-omgeving delen opslag (sed-isolatie kapot) | `test_deploy_isolatie_sed_patronen_matchen` |
 | 22 | Syntaxfout in `src/` breekt de gebouwde app | `test_boot_zonder_console_fouten` |
+| 23 | Test en prod niet te onderscheiden aan het app-icoon (groen autootje test / rood prod; v3.21) | `test_deploy_isolatie_sed_patronen_matchen` (icoon-herkleuring) |
 
 ## Bewust handmatig / niet automatisch gedekt
 

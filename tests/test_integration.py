@@ -130,3 +130,11 @@ def test_accordeon_dagen(app):
     pg.locator('.day[data-ds="%s"] .day-head' % d2).click()
     pg.locator(body2).wait_for()
     assert pg.locator(body1).count() == 0     # vorige dag klapt in (accordeon)
+
+
+def test_install_optie_bij_instellingen(app):
+    pg = app(storage=leeg_dossier(gelezenBerichten=GELEZEN))
+    pg.click('#tabs button[data-view="instellingen"]')
+    pg.locator("#installKaart").wait_for()
+    # toont óf de installatieknop óf de handmatige uitleg (headless krijgt geen prompt)
+    assert pg.locator("#installVak").inner_text().strip() != ""
