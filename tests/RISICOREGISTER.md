@@ -49,6 +49,7 @@ De tests draaien ook automatisch bij elke push via `.github/workflows/tests.yml`
 | 20 | Productie gebruikt per ongeluk test-opslagsleutels | `test_prod_index_gebruikt_prod_sleutels` |
 | 21 | Test- en prod-omgeving delen opslag (sed-isolatie kapot) | `test_deploy_isolatie_sed_patronen_matchen` |
 | 22 | Syntaxfout in `src/` breekt de gebouwde app | `test_boot_zonder_console_fouten` |
+| 23 | Test en prod niet te onderscheiden aan het app-icoon (groen autootje test / rood prod; v3.21) | `test_deploy_isolatie_sed_patronen_matchen` (icoon-herkleuring) |
 
 ## Bewust handmatig / niet automatisch gedekt
 
