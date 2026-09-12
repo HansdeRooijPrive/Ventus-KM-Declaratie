@@ -38,6 +38,7 @@ De tests draaien ook automatisch bij elke push via `.github/workflows/tests.yml`
 | 15 | Nieuwsbericht verschijnt niet / "als gelezen" werkt niet | `test_nieuws_popup_en_als_gelezen` |
 | 16 | OneDrive-gebruiker ziet bij opstart geen inlogscherm (v3.17) | `test_onedrive_inlogscherm_bij_opstart` |
 | 17 | Meerdere dagen tegelijk open → onoverzichtelijk; vorige dag klapt niet in (v3.18) | `test_accordeon_dagen` |
+| 17b | Gebruiker kan de app niet installeren na het wegklikken van de browser-melding (v3.20) | `test_install_optie_bij_instellingen` |
 
 ## Tier 3 — build & integriteit (`test_build.py`)
 
