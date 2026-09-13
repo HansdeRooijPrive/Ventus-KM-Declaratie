@@ -4,7 +4,7 @@
 /* ============================================================
    Constanten
    ============================================================ */
-const STORE_KEY = 'kmdeclaratie.v1';
+const STORE_KEY = '{{STORAGE_KEY}}.v1';
 const WEEKDAGEN = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
 const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 const SNELLE_OPMERKINGEN = ['Thuiswerken','Vakantie','Verlof','Ziek','Feestdag'];

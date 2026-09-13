@@ -1,0 +1,13 @@
+name: CI
+
+on:
+  push:
+    branches: [main, acceptatie, development]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  verify:
+    uses: HansdeRooijPrive/OTAP-CI/.github/workflows/verify.yml@v2
+  tests:
+    uses: HansdeRooijPrive/OTAP-CI/.github/workflows/tests.yml@v2

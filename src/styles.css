@@ -1,8 +1,8 @@
 
 :root{
-  --merk:#cc0000;
-  --merk-donker:#a80000;
-  --merk-licht:#e02020;
+  --merk:{{MERK}};
+  --merk-donker:{{MERK_DONKER}};
+  --merk-licht:{{MERK_LICHT}};
   --bg:#f6f6f7;
   --surface:#ffffff;
   --surface-2:#fafafa;

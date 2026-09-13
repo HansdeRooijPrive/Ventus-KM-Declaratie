@@ -1,0 +1,35 @@
+{
+  "platform": "v2",
+  "name": "Ventus Kilometerdeclaratie",
+  "short_name": "Kilometers",
+  "storage_key": "kmdeclaratie",
+  "theme": {
+    "prod": {
+      "merk": "#cc0000",
+      "merk_donker": "#a80000",
+      "merk_licht": "#e02020"
+    },
+    "acc": {
+      "merk": "#b45309",
+      "merk_donker": "#92400e",
+      "merk_licht": "#d97706"
+    },
+    "test": {
+      "merk": "#0f7a45",
+      "merk_donker": "#0b5c34",
+      "merk_licht": "#1a9d5c"
+    }
+  },
+  "waarden": {
+    "OMG_SUFFIX": {
+      "prod": "",
+      "acc": "-acc",
+      "test": "-test"
+    },
+    "THEMA_URL": {
+      "prod": "%23cc0000",
+      "acc": "%23b45309",
+      "test": "%230f7a45"
+    }
+  }
+}

@@ -4,3 +4,7 @@
 index.html text eol=lf
 build.py    text eol=lf
 src/**      text eol=lf
+app.json    text eol=lf
+
+# Iconen zijn binair: nooit regeleindes vertalen (src/** hierboven zou ze beschadigen).
+src/icons/*.png binary

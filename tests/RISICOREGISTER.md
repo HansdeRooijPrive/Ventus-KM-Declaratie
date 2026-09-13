@@ -47,9 +47,9 @@ De tests draaien ook automatisch bij elke push via `.github/workflows/tests.yml`
 | 18 | `index.html` raakt uit sync met `src/` → verouderde code live | `test_build_check_slaagt` |
 | 19 | App-code belandt in een vendor-bestand (versiebeheer onvindbaar) | `test_geen_appcode_in_vendor` |
 | 20 | Productie gebruikt per ongeluk test-opslagsleutels | `test_prod_index_gebruikt_prod_sleutels` |
-| 21 | Test- en prod-omgeving delen opslag (sed-isolatie kapot) | `test_deploy_isolatie_sed_patronen_matchen` |
+| 21 | Test- en prod-omgeving delen opslag (sed-isolatie kapot) | `test_omgevingen_hebben_eigen_opslag` |
 | 22 | Syntaxfout in `src/` breekt de gebouwde app | `test_boot_zonder_console_fouten` |
-| 23 | Test en prod niet te onderscheiden aan het app-icoon (groen autootje test / rood prod; v3.21) | `test_deploy_isolatie_sed_patronen_matchen` (icoon-herkleuring) |
+| 23 | Test en prod niet te onderscheiden aan het app-icoon (groen autootje test / rood prod; v3.21) | `test_omgevingen_hebben_eigen_opslag` (icoon-herkleuring) |
 
 ## Bewust handmatig / niet automatisch gedekt
 

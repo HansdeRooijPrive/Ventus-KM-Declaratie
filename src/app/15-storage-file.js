@@ -1,7 +1,7 @@
 /* ============================================================
    Opslag in een zelfgekozen bestand (File System Access API)
    ============================================================ */
-const IDB_DB = 'kilometerdeclaratie', IDB_STORE = 'kv', IDB_KEY = 'opslagbestand';
+const IDB_DB = 'kilometerdeclaratie{{OMG_SUFFIX}}', IDB_STORE = 'kv', IDB_KEY = 'opslagbestand';
 let idbConn = null;
 function idbOpen() {
   return new Promise((res, rej) => {

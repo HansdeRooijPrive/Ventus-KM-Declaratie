@@ -10,7 +10,7 @@ const OD = {
   authority: 'https://login.microsoftonline.com/common',
   scopes: 'Files.ReadWrite.AppFolder offline_access openid profile',
   get redirect() { return location.origin + location.pathname; },  // exact deze pagina
-  bestand: 'kilometerdeclaratie.json',
+  bestand: 'kilometerdeclaratie{{OMG_SUFFIX}}.json',
   token: null,     // { access, refresh, expires(ms) }
   etag: null,      // laatst bekende cTag van het bestand in OneDrive
   web: null,       // webUrl om het bestand in OneDrive te openen
