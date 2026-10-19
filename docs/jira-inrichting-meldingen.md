@@ -6,9 +6,9 @@ bugmeldingen uit de app automatisch als issue in Jira terecht.
 **Benodigde rechten:** Jira-beheerder (voor *Instellingen → Systeem → Inkomende mail*) en
 projectbeheerder van het doelproject.
 
-**Wat er terug moet naar de ontwikkelaar:** de twee e-mailadressen uit stap 3. Die worden in
-`app.json` gezet (`waarden.JIRA_MAIL_BUG` en `waarden.JIRA_MAIL_STORY`); zolang ze leeg zijn
-toont de app alleen een knop "Kopieer melding" en verstuurt hij niets.
+**Wat er terug moet naar de ontwikkelaar:** het e-mailadres uit stap 3. Dat wordt in `app.json`
+gezet (`waarden.JIRA_MAIL_BUG`); zolang dat leeg is toont de app alleen een knop
+"Kopieer melding" en verstuurt hij niets.
 
 ---
 
@@ -97,27 +97,36 @@ gewoon leesbaar.
 > test vastgelegd (`test_melding_stuurt_geen_administratiegegevens_mee`). De melder kan in het
 > formulier uitklappen wat er precies wordt verstuurd.
 
-## 3. Twee adressen, want één handler = één issuetype
+## 3. Eén adres — en wat dat betekent voor het issuetype
 
-Een mailhandler in Jira heeft **één** standaard-issuetype. Om onderscheid te houden tussen bugs
-en stories zijn er dus twee handlers nodig, elk met een eigen adres. Bijvoorbeeld:
+**Er komt één e-mailadres**, bijvoorbeeld `km-meldingen@…`. Bugs en wijzigingsverzoeken gaan daar
+allebei heen; het onderwerp maakt het onderscheid:
 
-| Soort | Adres | Issuetype |
+```
+[BUG]   Totaal van de maand klopt niet
+[STORY] Rit kunnen dupliceren
+```
+
+Een mailhandler in Jira heeft echter **één** standaard-issuetype. Alles wat binnenkomt krijgt dus
+in eerste instantie hetzelfde type. Kies daarvoor **`Bug`**: een verkeerd getypeerde bug valt
+eerder op dan een verkeerd getypeerde wens, en bugs hebben vaker haast.
+
+Voor het omzetten van de `[STORY]`-meldingen zijn er twee werkwijzen:
+
+| | Werkwijze | Wat het kost |
 |---|---|---|
-| Bug | `km-bug@…` | `Bug` |
-| Wijzigingsverzoek | `km-story@…` | `Story` |
+| **Handmatig** | Bij het triagen zet je een `[STORY]`-issue om naar type `Story` | Enkele seconden per verzoek; geen inrichting nodig. Veilig startpunt. |
+| **Automatisch** | Een automatiseringsregel: *als het onderwerp begint met `[STORY]`, zet issuetype op `Story`* | Eenmalige inrichting. Let op: het issuetype wijzigen via automation werkt niet in elke Jira-configuratie (afhankelijk van het issuetype-schema en de veldconfiguratie). Probeer het, en val terug op handmatig als Jira het weigert. |
 
-> Werkt het met één adres beter in jullie opzet, dan kan dat ook: vul dat ene adres in en laat het
-> andere leeg — de app stuurt dan alles daarheen. Het onderwerp begint altijd met `[BUG]` of
-> `[STORY]`, dus een automatiseringsregel in Jira kan het issuetype daarna bijsturen. Twee
-> handlers is wel voorspelbaarder; automatisch het issuetype wijzigen is in Jira niet in alle
-> configuraties mogelijk.
+> Blijkt het onderscheid in de praktijk te omslachtig, dan is een tweede adres alsnog mogelijk:
+> een tweede handler met standaardtype `Story`. De app ondersteunt dat al — er hoeft alleen een
+> adres in `app.json` bij.
 
 ## 4. Route A — Jira Service Management (voorkeur als jullie dat hebben)
 
 Heeft Ventus JSM, gebruik dan het ingebouwde e-mailverzoekkanaal: dat is per project te activeren
-en vereist geen eigen postbus of mailhandler. Je krijgt per verzoektype een adres. Maak twee
-verzoektypen (één op `Bug`, één op `Story`), noteer beide adressen en ga door naar stap 6.
+en vereist geen eigen postbus of mailhandler. Je krijgt per verzoektype een adres. Maak één
+verzoektype dat op `Bug` uitkomt, noteer dat adres en ga door naar stap 6.
 
 ## 5. Route B — Jira Software / Work Management
 
@@ -140,19 +149,19 @@ Ga naar **Instellingen → Systeem → Inkomende mail**. Er zijn twee opties:
    niet werkt (zie *Aandachtspunten*). Let bij M365 op dat basic authentication is uitgefaseerd;
    gebruik de OAuth-koppeling die Jira voor Microsoft-accounts aanbiedt.
 
-### 5.3 Twee mailhandlers
+### 5.3 De mailhandler
 
-Maak onder *Inkomende mail* twee handlers aan:
+Maak onder *Inkomende mail* één handler aan:
 
-| Instelling | Handler 1 (bugs) | Handler 2 (wijzigingen) |
-|---|---|---|
-| Handlertype | Maak een nieuw issue van elke e-mail | idem |
-| Project | `KMD` | `KMD` |
-| Standaard-issuetype | **Bug** | **Story** |
-| Mailserver | uit 5.2 | uit 5.2 |
-| Adres / map | `km-bug@…` | `km-story@…` |
-| Melder (reporter) | afzender, of een vaste gebruiker als fallback | idem |
-| Quotes/ondertekening strippen | aan | aan |
+| Instelling | Waarde |
+|---|---|
+| Handlertype | Maak een nieuw issue van elke e-mail |
+| Project | `KMD` |
+| Standaard-issuetype | **Bug** (zie stap 3 voor het omzetten van `[STORY]`) |
+| Mailserver | uit 5.2 |
+| Adres / map | `km-meldingen@…` |
+| Melder (reporter) | afzender, of een vaste gebruiker als fallback |
+| Quotes/ondertekening strippen | aan |
 
 Belangrijk bij **Melder**: de afzender wordt alleen als reporter gezet als die een Jira-account
 heeft. Melders zonder account hebben een fallback-gebruiker nodig, anders wordt de mail
@@ -169,25 +178,31 @@ verplicht zijn (prioriteit, component, team, epic, sprint), of geef ze een stand
 
 ## 6. Testen
 
-1. Stuur handmatig een mail naar het bug-adres met onderwerp `[BUG] Test vanuit mail` en wat
-   tekst in de body.
-2. Wacht één pollinterval (standaard circa een minuut) en controleer of het issue in `KMD`
-   staat, met het juiste issuetype en de body als beschrijving.
-3. Herhaal voor het story-adres.
+1. Stuur handmatig een mail naar het adres met onderwerp `[BUG] Test vanuit mail` en wat tekst in
+   de body.
+2. Wacht één pollinterval (standaard circa een minuut) en controleer of het issue in `KMD` staat,
+   met issuetype `Bug` en de body als beschrijving.
+3. Herhaal met onderwerp `[STORY] Test vanuit mail`. Heb je de automatiseringsregel uit stap 3
+   ingericht, controleer dan of het issuetype op `Story` komt te staan; zo niet, dan is handmatig
+   omzetten de werkwijze.
 4. Loopt het mis: **Instellingen → Systeem → Inkomende mail → logboek** van de handler vertelt
    waarom (onbekende afzender, verplicht veld, geen rechten).
 
 ## 7. Aanleveren
 
-Geef de twee adressen door. Die gaan in `app.json`:
+Geef het adres door. Dat gaat in `app.json`:
 
 ```json
-"JIRA_MAIL_BUG":   { "prod": "km-bug@…",   "acc": "…", "test": "…" },
-"JIRA_MAIL_STORY": { "prod": "km-story@…", "acc": "…", "test": "…" }
+"JIRA_MAIL_BUG":   { "prod": "km-meldingen@…", "acc": "", "test": "" },
+"JIRA_MAIL_STORY": { "prod": "",               "acc": "", "test": "" }
 ```
 
-Per omgeving (productie, acceptatie, test) kan een ander adres. Wil je geen testmeldingen in
-Jira, laat `acc` en `test` dan leeg — de app biedt daar dan alleen "Kopieer melding".
+`JIRA_MAIL_STORY` blijft leeg: de app stuurt dan ook de wijzigingsverzoeken naar het bug-adres,
+met `[STORY]` in het onderwerp. Komt er later een tweede adres, dan wordt alleen dit veld gevuld.
+
+Per omgeving (productie, acceptatie, test) kan een ander adres. Hierboven staan `acc` en `test`
+leeg, zodat er geen testmeldingen in Jira belanden; de app biedt daar dan alleen
+"Kopieer melding". Wil je juist wél vanuit test kunnen melden, geef dat dan aan.
 
 ## Aandachtspunten
 
@@ -208,6 +223,6 @@ Jira, laat `acc` en `test` dan leeg — de app biedt daar dan alleen "Kopieer me
 
 De stappen volgen Atlassian's documentatie over het aanmaken van issues uit e-mail. Twee punten
 zijn niet uit Atlassian's eigen documentatie te bevestigen en komen van leveranciersgidsen en
-communityberichten: dat het issuetype **per handler** wordt ingesteld (en dus twee handlers nodig
-zijn), en de hierboven genoemde beperking van de standaard-mailserver. Controleer die twee in de
-admin-console voordat je erop bouwt.
+communityberichten: dat het issuetype **per handler** wordt ingesteld (waardoor alles binnenkomt
+als één type), en de hierboven genoemde beperking van de standaard-mailserver. Controleer die
+twee in de admin-console voordat je erop bouwt.
