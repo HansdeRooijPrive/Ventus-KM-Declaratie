@@ -58,6 +58,8 @@ window.__km = {
   kies: kiesOpslagBestand, openen: openOpslagBestand,
   schrijf: schrijfBestand, lees: laadUitBestand,
   nieuws: toonBerichten, berichten: BERICHTEN,
+  meld: { soorten: MELDSOORTEN, invoer: meldInvoer, tekst: meldTekst, context: meldContext,
+          onderwerp: meldOnderwerp, mail: meldMail },
   // Testhaakje: pure functies bereikbaar maken voor de geautomatiseerde tests (tests/test_pure.py)
   fns: { afrond, haversine, locKort, locNaam, locLabel, comboZoek, dagKm, maandKm, paarAfstand,
          nominatimQuery, daysInMonth, shiftYm, ymLabel, normPostcode, parseAdres, migreer, berichtGelezen },

@@ -1,10 +1,10 @@
 """Tier 2 — DOM/integratie via headless Chromium. Zie tests/RISICOREGISTER.md."""
 import datetime
 
-from conftest import leeg_dossier
+from conftest import alle_bericht_ids, leeg_dossier
 
 YM = datetime.date.today().strftime("%Y-%m")   # huidige maand = wat de app toont
-GELEZEN = ["huidige-locatie", "onedrive-multidevice"]   # onderdruk de nieuws-popup in maand-tests
+GELEZEN = alle_bericht_ids()   # onderdruk de nieuws-popup; groeit automatisch mee met nieuwe berichten
 
 
 def test_menu_en_dagen_en_geen_bootfouten(app):
@@ -99,13 +99,13 @@ def test_nieuws_popup_en_als_gelezen(app):
     pg = app(storage=leeg_dossier())   # ingericht (geen welkom) + gelezenBerichten leeg -> eerste ongelezen verschijnt
     modal = pg.locator("#modalHost .backdrop .modal")
     modal.wait_for(timeout=3000)
-    assert "Huidige locatie" in modal.locator("h3").inner_text()
-    pg.click('#modalHost .backdrop .modal [data-x="gelezen"]')
-    modal.locator("h3").wait_for()
-    assert "meerdere apparaten" in pg.locator("#modalHost .backdrop .modal h3").inner_text()   # tweede bericht (OneDrive)
-    pg.click('#modalHost .backdrop .modal [data-x="gelezen"]')
-    assert pg.locator("#modalHost .backdrop").count() == 0                            # geen meer
-    assert pg.evaluate("() => window.__km.D.gelezenBerichten.length") == 2
+    assert "Huidige locatie" in modal.locator("h3").inner_text()      # eerste bericht
+    # Alle berichten achter elkaar wegmarkeren; het aantal volgt de bron, niet een vast getal.
+    for i in range(len(GELEZEN)):
+        modal.locator("h3").wait_for()
+        pg.click('#modalHost .backdrop .modal [data-x="gelezen"]')
+    assert pg.locator("#modalHost .backdrop").count() == 0            # geen ongelezen bericht meer
+    assert pg.evaluate("() => window.__km.D.gelezenBerichten.length") == len(GELEZEN)
 
 
 def test_onedrive_inlogscherm_bij_opstart(app):
@@ -138,3 +138,91 @@ def test_install_optie_bij_instellingen(app):
     pg.locator("#installKaart").wait_for()
     # toont óf de installatieknop óf de handmatige uitleg (headless krijgt geen prompt)
     assert pg.locator("#installVak").inner_text().strip() != ""
+
+
+def test_meld_menu_en_formulieren(app):
+    """Beide meldopties staan onder Hulp en renderen hun formulier."""
+    pg = app(storage=leeg_dossier(gelezenBerichten=GELEZEN))
+    views = pg.evaluate("() => Array.from(document.querySelectorAll('#tabs button')).map(b=>b.dataset.view)")
+    assert "wijziging" in views and "bug" in views
+
+    pg.click('#tabs button[data-view="bug"]')
+    pg.locator("#meldForm-bug .field").first.wait_for()
+    for k in ["samenvatting", "stappen", "verwacht", "werkelijk", "frequentie", "hinder", "melder"]:
+        assert pg.locator("#meld-bug-%s" % k).count() == 1, k
+
+    pg.click('#tabs button[data-view="wijziging"]')
+    pg.locator("#meldForm-wijziging .field").first.wait_for()
+    for k in ["samenvatting", "rol", "wens", "waarde", "criteria", "urgentie", "melder"]:
+        assert pg.locator("#meld-wijziging-%s" % k).count() == 1, k
+
+    # Naam uit Instellingen wordt voorgevuld, zodat de melder bekend is
+    assert pg.input_value("#meld-wijziging-melder") == "Test"
+    assert pg.evaluate("() => window.__errs") == []
+
+
+def test_bug_melding_bevat_alle_kopjes_en_context(app):
+    pg = app(storage=leeg_dossier(gelezenBerichten=GELEZEN))
+    pg.click('#tabs button[data-view="bug"]')
+    pg.locator("#meld-bug-samenvatting").wait_for()
+    for k, v in [("samenvatting", "Totaal klopt niet"), ("stappen", "1. Open Maand\n2. Voeg rit toe"),
+                 ("verwacht", "Totaal 20 km"), ("werkelijk", "Totaal 10 km")]:
+        pg.fill("#meld-bug-%s" % k, v)
+        pg.dispatch_event("#meld-bug-%s" % k, "input")
+    pg.select_option("#meld-bug-frequentie", "altijd")
+    pg.select_option("#meld-bug-hinder", index=1)
+
+    assert pg.evaluate("() => window.__km.meld.onderwerp('bug')") == "[BUG] Totaal klopt niet"
+    tekst = pg.evaluate("() => window.__km.meld.tekst('bug')")
+    for kop in ["Type: Bug", "*Stappen om te reproduceren*", "*Verwacht resultaat*",
+                "*Werkelijk resultaat*", "*Frequentie*", "*Impact*", "*Technische context"]:
+        assert kop in tekst, kop
+    assert "App-versie:" in tekst and "Omgeving:" in tekst and "User agent:" in tekst
+    assert "1. Open Maand" in tekst
+    assert pg.evaluate("() => window.__errs") == []
+
+
+def test_wijziging_wordt_user_story(app):
+    pg = app(storage=leeg_dossier(gelezenBerichten=GELEZEN))
+    pg.click('#tabs button[data-view="wijziging"]')
+    pg.locator("#meld-wijziging-samenvatting").wait_for()
+    for k, v in [("samenvatting", "Rit kopieren"), ("rol", "medewerker die declareert"),
+                 ("wens", "een rit kunnen dupliceren"), ("waarde", "ik niet alles opnieuw hoef in te voeren")]:
+        pg.fill("#meld-wijziging-%s" % k, v)
+        pg.dispatch_event("#meld-wijziging-%s" % k, "input")
+    pg.select_option("#meld-wijziging-urgentie", "graag binnenkort")
+
+    tekst = pg.evaluate("() => window.__km.meld.tekst('wijziging')")
+    assert "Type: Story" in tekst
+    assert ("Als medewerker die declareert wil ik een rit kunnen dupliceren "
+            "zodat ik niet alles opnieuw hoef in te voeren") in tekst
+    assert "*Acceptatiecriteria*" not in tekst          # leeg optioneel veld wordt weggelaten
+    assert pg.evaluate("() => window.__errs") == []
+
+
+def test_melding_stuurt_geen_administratiegegevens_mee(app):
+    """Harde privacygarantie: een melding bevat nooit ritten, locaties of bedragen."""
+    d = leeg_dossier(
+        settings={"naam": "Jan Jansen", "vergoeding": 0.23},
+        locaties=[{"id": "L1", "naam": "Geheime Klant BV", "straat": "Kerkstraat",
+                   "huisnummer": "7", "postcode": "1234 AB", "plaats": "Zwolle", "aliassen": []}],
+        maanden={YM: {"dagen": {YM + "-05": {"opmerking": "vertrouwelijk bezoek",
+                 "ritten": [{"id": "r", "van": "L1", "naar": "L1", "km": 1337, "kmA": 1337}]}}}},
+        gelezenBerichten=GELEZEN,
+    )
+    pg = app(storage=d)
+    pg.click('#tabs button[data-view="bug"]')
+    pg.locator("#meld-bug-samenvatting").wait_for()
+    for k, v in [("samenvatting", "Iets gaat mis"), ("stappen", "openen"),
+                 ("verwacht", "goed"), ("werkelijk", "fout")]:
+        pg.fill("#meld-bug-%s" % k, v)
+        pg.dispatch_event("#meld-bug-%s" % k, "input")
+    pg.select_option("#meld-bug-frequentie", "altijd")
+    pg.select_option("#meld-bug-hinder", index=1)
+
+    tekst = pg.evaluate("() => window.__km.meld.tekst('bug')")
+    for verboden in ["Geheime Klant", "Kerkstraat", "1234 AB", "Zwolle",
+                     "vertrouwelijk bezoek", "0.23", "0,23", "1337"]:
+        assert verboden not in tekst, "melding lekt administratiegegeven: %s" % verboden
+    # de naam van de melder mag wél mee, maar alleen via het melder-veld
+    assert "*Melder*" in tekst and "Jan Jansen" in tekst

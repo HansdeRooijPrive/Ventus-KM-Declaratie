@@ -39,6 +39,10 @@ De tests draaien ook automatisch bij elke push via `.github/workflows/tests.yml`
 | 16 | OneDrive-gebruiker ziet bij opstart geen inlogscherm (v3.17) | `test_onedrive_inlogscherm_bij_opstart` |
 | 17 | Meerdere dagen tegelijk open → onoverzichtelijk; vorige dag klapt niet in (v3.18) | `test_accordeon_dagen` |
 | 17b | Gebruiker kan de app niet installeren na het wegklikken van de browser-melding (v3.20) | `test_install_optie_bij_instellingen` |
+| 24 | Meldopties ontbreken onder Hulp of het formulier mist velden (v3.22) | `test_meld_menu_en_formulieren` |
+| 25 | Bugmelding komt zonder stappen/context in Jira → niet na te zoeken (v3.22) | `test_bug_melding_bevat_alle_kopjes_en_context` |
+| 26 | Wijzigingsverzoek belandt niet in user-story-vorm (v3.22) | `test_wijziging_wordt_user_story` |
+| 27 | **Privacy:** een melding lekt ritten, locaties, adressen of bedragen uit de administratie (v3.22) | `test_melding_stuurt_geen_administratiegegevens_mee` |
 
 ## Tier 3 — build & integriteit (`test_build.py`)
 
@@ -59,3 +63,7 @@ Deze vereisen echte credentials, hardware of netwerk en worden met de hand getes
 - **Na inloggen → scherm Maand** (v3.18): vereist een volledige OAuth-terugkeer; code geverifieerd, handmatig te bevestigen op de test-URL.
 - **Mobiel fullscreen** (v3.18): `requestFullscreen`/PWA-installatie is in headless onbetrouwbaar; handmatig op een echt toestel.
 - **Echte GPS-hardware** en **echte Nominatim/OSRM/Overpass-calls**: in de tests gemockt (#14, #2).
+- **Het daadwerkelijk aankomen van een melding in Jira** (v3.22): vereist een ingevuld `JIRA_MAIL` in
+  `app.json`, een mailhandler op het Jira-project en een mailclient op het toestel. De suite dekt wél
+  dat de melding juist en volledig wordt opgebouwd (#24–#27); het openen van de mailclient
+  (`location.href = 'mailto:…'`) en de rest van de keten is handmatig te bevestigen.

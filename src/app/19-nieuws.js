@@ -26,6 +26,18 @@ const BERICHTEN = [
       'Microsoft-account. Je administratie staat dan in een eigen map in jouw OneDrive en synchroniseert automatisch tussen je apparaten. ' +
       'Wijzig je iets op een ander apparaat, dan merkt de app dat en vraagt welke versie voorgaat.</p>' +
       '<p class="muted" style="margin:0;font-size:13px">Blijf je liever op één apparaat werken? Dan verandert er niets: “dit apparaat” blijft de standaard.</p>'
+  },
+  {
+    id: 'meldingen-jira',
+    titel: 'Nieuw: 💡 wijziging aanvragen of 🐞 een bug melden',
+    html:
+      '<p style="margin:0 0 10px">Loop je tegen een fout aan, of heb je een wens? Onder <strong>Hulp</strong> in het menu ' +
+      'staan nu <strong>Wijziging aanvragen</strong> en <strong>Bug melden</strong>.</p>' +
+      '<p style="margin:0 0 10px">Een wens dien je in als user story — <em>als … wil ik … zodat …</em> — zodat duidelijk is wie het ' +
+      'nodig heeft en waarom. Bij een bug vraagt de app wat je deed, wat je verwachtte en wat er gebeurde, en stuurt hij de ' +
+      'technische gegevens automatisch mee zodat de fout na te zoeken is.</p>' +
+      '<p class="muted" style="margin:0;font-size:13px">Er gaan nooit gegevens uit je administratie mee: geen ritten, locaties, ' +
+      'adressen of bedragen. In het formulier kun je uitklappen wat er precies wordt verstuurd.</p>'
   }
 ];
 

@@ -105,3 +105,12 @@ def leeg_dossier(**over):
         else:
             d[k] = v
     return d
+
+
+def alle_bericht_ids():
+    """Alle nieuwsbericht-ids uit de bron. Tests seeden deze als 'gelezen', zodat de
+    nieuws-popup de UI niet blokkeert. Door ze hier uit te lezen in plaats van te
+    hardcoderen, breken de tests niet zodra er een bericht bij komt."""
+    import re
+    src = open(os.path.join(ROOT, "src", "app", "19-nieuws.js"), encoding="utf-8").read()
+    return re.findall(r"^\s*id:\s*'([^']+)'", src, re.M)
