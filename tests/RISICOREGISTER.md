@@ -54,6 +54,7 @@ De tests draaien ook automatisch bij elke push via `.github/workflows/tests.yml`
 | 21 | Test- en prod-omgeving delen opslag (sed-isolatie kapot) | `test_omgevingen_hebben_eigen_opslag` |
 | 22 | Syntaxfout in `src/` breekt de gebouwde app | `test_boot_zonder_console_fouten` |
 | 23 | Test en prod niet te onderscheiden aan het app-icoon (groen autootje test / rood prod; v3.21) | `test_omgevingen_hebben_eigen_opslag` (icoon-herkleuring) |
+| 28 | Proefmelding uit test/acceptatie komt in Jira binnen alsof hij uit productie komt (v3.22) | `test_omgevingen_hebben_eigen_opslag` (omgevingsstempel `MELD_OMGEVING`) |
 
 ## Bewust handmatig / niet automatisch gedekt
 

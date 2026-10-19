@@ -53,6 +53,10 @@ def test_omgevingen_hebben_eigen_opslag():
     assert "kmdeclaratie.test.v1" in test and "kilometerdeclaratie-test.json" in test
     # merkkleur per omgeving (groen voor test, zoals voorheen)
     assert "--merk:#cc0000;" in prod and "--merk:#0f7a45;" in test and "--merk:#cc0000;" not in acc
+    # meldingen: elke build stempelt zijn eigen omgeving, anders komt een proefmelding
+    # in Jira binnen alsof hij uit productie komt
+    for html, naam in ((prod, "Productie"), (acc, "Acceptatie"), (test, "Test")):
+        assert "const MELD_OMGEVING = '%s';" % naam in html
 
 
 def test_boot_zonder_console_fouten(app):

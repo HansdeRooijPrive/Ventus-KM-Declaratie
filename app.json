@@ -37,9 +37,9 @@
       "test": "Test"
     },
     "JIRA_MAIL_BUG": {
-      "prod": "",
-      "acc": "",
-      "test": ""
+      "prod": "jira@ventustestprofessionals.atlassian.net",
+      "acc": "jira@ventustestprofessionals.atlassian.net",
+      "test": "jira@ventustestprofessionals.atlassian.net"
     },
     "JIRA_MAIL_STORY": {
       "prod": "",

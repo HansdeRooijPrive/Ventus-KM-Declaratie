@@ -4622,7 +4622,7 @@ $('#berichtenLijst').addEventListener('click', e => {
    Is er maar één adres ingevuld, dan gaat alles daarheen (het onderwerp begint met
    [BUG] of [STORY], zodat een automatiseringsregel in Jira kan bijsturen).
    Beide leeg = nog niet ingericht: de app biedt dan alleen "Kopieer melding". */
-const MELD_MAIL_BUG = '';
+const MELD_MAIL_BUG = 'jira@ventustestprofessionals.atlassian.net';
 const MELD_MAIL_STORY = '';
 const MELD_OMGEVING = 'Productie';   /* Productie / Acceptatie / Test */
 const MELD_MAILTO_MAX = 1900;           /* boven deze lengte weigeren mailclients de mailto-link */
@@ -4850,8 +4850,12 @@ async function meldNaarKlembord(tekst) {
   } catch (e) { return false; }
 }
 
+/* [BUG] / [STORY] blijft vooraan staan, zodat een automatiseringsregel in Jira erop kan sturen.
+   Buiten productie komt de omgeving er direct achter, zodat een proefmelding in de issuelijst
+   niet voor een echte melding wordt aangezien. */
 function meldOnderwerp(soort) {
-  return MELDSOORTEN[soort].prefix + ' ' + String(meldInvoer[soort].samenvatting || '').trim();
+  const omg = MELD_OMGEVING === 'Productie' ? '' : '[' + MELD_OMGEVING.toUpperCase() + '] ';
+  return MELDSOORTEN[soort].prefix + ' ' + omg + String(meldInvoer[soort].samenvatting || '').trim();
 }
 
 async function verstuurMelding(soort) {

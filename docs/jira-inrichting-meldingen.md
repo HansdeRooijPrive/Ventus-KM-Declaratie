@@ -6,9 +6,9 @@ bugmeldingen uit de app automatisch als issue in Jira terecht.
 **Benodigde rechten:** Jira-beheerder (voor *Instellingen → Systeem → Inkomende mail*) en
 projectbeheerder van het doelproject.
 
-**Wat er terug moet naar de ontwikkelaar:** het e-mailadres uit stap 3. Dat wordt in `app.json`
-gezet (`waarden.JIRA_MAIL_BUG`); zolang dat leeg is toont de app alleen een knop
-"Kopieer melding" en verstuurt hij niets.
+**Status:** het adres is bekend en staat al in `app.json` (`waarden.JIRA_MAIL_BUG`), voor alle
+drie de omgevingen. De app kan dus versturen zodra de handler aan de Jira-kant staat. Tot die
+tijd komt de mail aan maar gebeurt er niets mee.
 
 ---
 
@@ -99,12 +99,25 @@ gewoon leesbaar.
 
 ## 3. Eén adres — en wat dat betekent voor het issuetype
 
-**Er komt één e-mailadres**, bijvoorbeeld `km-meldingen@…`. Bugs en wijzigingsverzoeken gaan daar
-allebei heen; het onderwerp maakt het onderscheid:
+**Er is één e-mailadres:**
+
+```
+jira@ventustestprofessionals.atlassian.net
+```
+
+Bugs en wijzigingsverzoeken gaan daar allebei heen; het onderwerp maakt het onderscheid:
 
 ```
 [BUG]   Totaal van de maand klopt niet
 [STORY] Rit kunnen dupliceren
+```
+
+Meldingen uit test en acceptatie krijgen de omgeving er direct achter, zodat een proefmelding in
+de issuelijst niet voor een echte wordt aangezien. Productie heeft geen marker:
+
+```
+[BUG] [TEST]        Totaal van de maand klopt niet
+[STORY] [ACCEPTATIE] Rit kunnen dupliceren
 ```
 
 Een mailhandler in Jira heeft echter **één** standaard-issuetype. Alles wat binnenkomt krijgt dus
@@ -141,13 +154,17 @@ van dat project zitten.
 
 ### 5.2 Mailserver
 
-Ga naar **Instellingen → Systeem → Inkomende mail**. Er zijn twee opties:
+Ga naar **Instellingen → Systeem → Inkomende mail**.
 
-1. **De standaard-mailserver van Jira Cloud** — geen eigen postbus nodig. Het snelst.
-2. **Een eigen POP/IMAP-postbus**, bijvoorbeeld een shared mailbox in Microsoft 365
-   (`km-meldingen@ventus.nl`). Nodig als je de adressen zelf in de hand wil houden of als optie 1
-   niet werkt (zie *Aandachtspunten*). Let bij M365 op dat basic authentication is uitgefaseerd;
-   gebruik de OAuth-koppeling die Jira voor Microsoft-accounts aanbiedt.
+Het gekozen adres `jira@ventustestprofessionals.atlassian.net` is het adres van de
+**standaard-mailserver van Jira Cloud**. Er is dus geen eigen postbus nodig — je hoeft hier alleen
+te controleren dat die server beschikbaar is, en door naar 5.3.
+
+Werkt die server niet voor het aanmaken van issues (zie *Aandachtspunten*), dan is de uitwijk een
+**eigen POP/IMAP-postbus**, bijvoorbeeld een shared mailbox in Microsoft 365. In dat geval
+verandert het adres en moet dat teruggekoppeld worden, zodat het in `app.json` aangepast kan
+worden. Let bij M365 op dat basic authentication is uitgefaseerd; gebruik de OAuth-koppeling die
+Jira voor Microsoft-accounts aanbiedt.
 
 ### 5.3 De mailhandler
 
@@ -159,7 +176,7 @@ Maak onder *Inkomende mail* één handler aan:
 | Project | `KMD` |
 | Standaard-issuetype | **Bug** (zie stap 3 voor het omzetten van `[STORY]`) |
 | Mailserver | uit 5.2 |
-| Adres / map | `km-meldingen@…` |
+| Adres / map | `jira@ventustestprofessionals.atlassian.net` |
 | Melder (reporter) | afzender, of een vaste gebruiker als fallback |
 | Quotes/ondertekening strippen | aan |
 
@@ -188,24 +205,32 @@ verplicht zijn (prioriteit, component, team, epic, sprint), of geef ze een stand
 4. Loopt het mis: **Instellingen → Systeem → Inkomende mail → logboek** van de handler vertelt
    waarom (onbekende afzender, verplicht veld, geen rechten).
 
-## 7. Aanleveren
+## 7. Wat er aan de app-kant al staat
 
-Geef het adres door. Dat gaat in `app.json`:
+Dit is al ingeregeld, er hoeft niets meer aangeleverd te worden:
 
 ```json
-"JIRA_MAIL_BUG":   { "prod": "km-meldingen@…", "acc": "", "test": "" },
-"JIRA_MAIL_STORY": { "prod": "",               "acc": "", "test": "" }
+"JIRA_MAIL_BUG":   { "prod": "jira@ventustestprofessionals.atlassian.net",
+                     "acc":  "jira@ventustestprofessionals.atlassian.net",
+                     "test": "jira@ventustestprofessionals.atlassian.net" },
+"JIRA_MAIL_STORY": { "prod": "", "acc": "", "test": "" }
 ```
 
-`JIRA_MAIL_STORY` blijft leeg: de app stuurt dan ook de wijzigingsverzoeken naar het bug-adres,
-met `[STORY]` in het onderwerp. Komt er later een tweede adres, dan wordt alleen dit veld gevuld.
+`JIRA_MAIL_STORY` is leeg: de app stuurt de wijzigingsverzoeken naar hetzelfde adres, met
+`[STORY]` in het onderwerp. Komt er later een tweede adres voor stories, dan wordt alleen dit
+veld gevuld.
 
-Per omgeving (productie, acceptatie, test) kan een ander adres. Hierboven staan `acc` en `test`
-leeg, zodat er geen testmeldingen in Jira belanden; de app biedt daar dan alleen
-"Kopieer melding". Wil je juist wél vanuit test kunnen melden, geef dat dan aan.
+Alle drie de omgevingen gebruiken hetzelfde adres, zodat de keten op test te beproeven is
+vóórdat hij naar productie gaat. Test- en acceptatiemeldingen zijn aan het onderwerp te
+herkennen (`[TEST]`, `[ACCEPTATIE]`). Wil je ze helemaal niet in Jira hebben, laat het weten —
+dan worden `acc` en `test` leeggemaakt en bieden die omgevingen alleen "Kopieer melding".
 
 ## Aandachtspunten
 
+- **Het adres is site-breed, niet projectgebonden.** `jira@<site>.atlassian.net` is het algemene
+  inkomende adres van de Jira-site; welk project een mail raakt, bepaalt de handler. Bestaat er al
+  een handler op dit adres voor een ander project, controleer dan dat de twee elkaar niet in de
+  weg zitten.
 - **Standaard-mailserver van Jira Cloud:** er zijn meldingen van gebruikers bij wie die wél
   commentaar toevoegde maar géén nieuwe issues aanmaakte. Werkt het niet, wijk dan uit naar een
   eigen IMAP-postbus (5.2, optie 2).

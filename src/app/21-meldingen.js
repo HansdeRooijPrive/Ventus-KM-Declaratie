@@ -239,8 +239,12 @@ async function meldNaarKlembord(tekst) {
   } catch (e) { return false; }
 }
 
+/* [BUG] / [STORY] blijft vooraan staan, zodat een automatiseringsregel in Jira erop kan sturen.
+   Buiten productie komt de omgeving er direct achter, zodat een proefmelding in de issuelijst
+   niet voor een echte melding wordt aangezien. */
 function meldOnderwerp(soort) {
-  return MELDSOORTEN[soort].prefix + ' ' + String(meldInvoer[soort].samenvatting || '').trim();
+  const omg = MELD_OMGEVING === 'Productie' ? '' : '[' + MELD_OMGEVING.toUpperCase() + '] ';
+  return MELDSOORTEN[soort].prefix + ' ' + omg + String(meldInvoer[soort].samenvatting || '').trim();
 }
 
 async function verstuurMelding(soort) {
