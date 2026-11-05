@@ -93,7 +93,10 @@ function comboTeken(q) {
   combo.items = fav.concat(rest).slice(0, COMBO_MAX);
   if (combo.index >= combo.items.length) combo.index = 0;
 
-  let h = '<div class="combo-item huidige" data-id="' + HUIDIGE_LOC + '">📍 Huidige locatie</div>';
+  /* "Huidige locatie" volgt in de inbouwstand een vlag van het portaal; standaard uit. */
+  let h = (INBOUW_AAN && !inbouwLocatieToegestaan())
+    ? ''
+    : '<div class="combo-item huidige" data-id="' + HUIDIGE_LOC + '">📍 Huidige locatie</div>';
   if (!combo.items.length) {
     h += '<div class="combo-leeg">Geen locatie gevonden. Je kunt hem hieronder toevoegen.</div>';
   } else if (fav.length && !termen.length) {

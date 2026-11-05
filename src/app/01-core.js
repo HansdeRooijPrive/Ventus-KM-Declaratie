@@ -11,6 +11,14 @@ const SNELLE_OPMERKINGEN = ['Thuiswerken','Vakantie','Verlof','Ziek','Feestdag']
 const NEW_LOC = '__new__';
 const HUIDIGE_LOC = '__gps__';
 
+/* Inbouwstand: de module draait in een kader binnen een portaal (VSA) en bewaart
+   zelf niets. Zie src/app/22-inbouw.js en docs/vsa-inbouwcontract-v1-reactie.md.
+   De detectie staat hier omdat de opslagkeuze al bij het laden van dit bestand valt. */
+const INBOUW_AAN = (function () {
+  try { return new URLSearchParams(location.search).get('inbouw') === 'vsa'; }
+  catch (e) { return false; }
+})();
+
 /* ============================================================
    Opslag
    ============================================================ */
@@ -47,11 +55,19 @@ function defaultData() {
 
 let D;
 let uitBrowserkopie = false;      // gegevens komen uit de noodkopie van de browser, niet uit een bestand
-try {
-  const raw = localStorage.getItem(STORE_KEY);
-  D = raw ? JSON.parse(raw) : defaultData();
-  uitBrowserkopie = !!raw;
-} catch (e) { D = defaultData(); }
+if (INBOUW_AAN) {
+  /* In de inbouwstand komt de administratie uitsluitend van het portaal. Niets uit
+     localStorage lezen: het kader deelt die opslag met het portaal, en op een gedeelde
+     computer zou een kopie van de vorige gebruiker achterblijven. */
+  D = defaultData();
+  try { localStorage.removeItem(STORE_KEY); } catch (e) { /* opruimen is optioneel */ }
+} else {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    D = raw ? JSON.parse(raw) : defaultData();
+    uitBrowserkopie = !!raw;
+  } catch (e) { D = defaultData(); }
+}
 if (!D.settings) D = defaultData();
 D.maanden = D.maanden || {};
 D.afstanden = D.afstanden || {};
@@ -81,6 +97,12 @@ let cacheTimer = null, bestandTimer = null;
 function save() {
   try { D.appVersie = APP_VERSIE.versie; } catch (e) { /* versie is optioneel */ }
   vergeetFavorieten();
+  if (INBOUW_AAN) {
+    /* Geen browseropslag, geen bestand, geen OneDrive: alles gaat direct naar het
+       portaal. Dat voegt snel opeenvolgende berichten zelf samen en bepaalt het tempo. */
+    inbouwBewaar('bewerking');
+    return;
+  }
   clearTimeout(cacheTimer);
   cacheTimer = setTimeout(() => {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(D)); }
@@ -99,6 +121,11 @@ function save() {
 function tekenSaveHint() {
   const h = document.getElementById('saveHint');
   if (!h) return;
+  if (INBOUW_AAN) {
+    /* Het portaal bewaart; toon alleen of die wijziging is aangekomen. */
+    h.textContent = { ok: 'Opgeslagen', bezig: 'Opslaan…', fout: 'Opslaan mislukt' }[opslag.status] || '';
+    return;
+  }
   h.textContent = opslag.handle
     ? (opslag.status === 'ok' ? 'Opgeslagen in ' + opslag.naam : 'Wijziging nog niet weggeschreven')
     : 'Alleen in deze browser opgeslagen';

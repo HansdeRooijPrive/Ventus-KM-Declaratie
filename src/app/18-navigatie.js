@@ -15,6 +15,7 @@ function gaNaar(view) {
   if (view === 'bug') tekenMeldForm('bug');
   if (view === 'over') tekenVersie();
   if (view === 'welkom') tekenWelkom();
+  inbouwMeldView(view);         // portaal laat zijn tabbladen meelopen (ook bij een interne wissel)
 }
 $('#tabs').addEventListener('click', e => {
   const b = e.target.closest('button[data-view]');
