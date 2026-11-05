@@ -44,33 +44,25 @@ De tests draaien ook automatisch bij elke push via `.github/workflows/tests.yml`
 | 26 | Wijzigingsverzoek belandt niet in user-story-vorm (v3.22) | `test_wijziging_wordt_user_story` |
 | 27 | **Privacy:** een melding lekt ritten, locaties, adressen of bedragen uit de administratie (v3.22) | `test_melding_stuurt_geen_administratiegegevens_mee` |
 
-## Tier 4 — inbouwstand en VSA-contract (`test_inbouw.py`)
+## Tier 5 — koppelpunten met VSA (`test_vsa_koppelpunten.py`)
 
-Draait tegen `tests/vsa-sim.html`, een nabootsing van het portaal. De scenario's volgen de
-acceptatielijst uit voorstel G van `docs/vsa-inbouwcontract-v1-reactie.md`: elk geval waarin een
-medewerker gegevens zou kunnen kwijtraken, heeft hier een test.
+VSA bouwt de inbouwstand zelf als een laag in onze bundel; de module spreekt het contract niet
+zelf. Wat wij moeten borgen zijn de namen en vormen waar die laag op aangrijpt. Zie
+`docs/vsa-koppelpunten.md`. **Een rode test hier is geen bug maar een meldplicht richting VSA.**
 
 | # | Risico dat we afdekken | Test |
 |---|------------------------|------|
-| 29 | Portaal krijgt niet te horen welk contract/versie de module spreekt | `test_gereed_draagt_contract_en_versies` |
-| 30 | Administratie van het portaal komt niet of verkeerd binnen | `test_laden_vult_de_administratie` |
-| 31 | Leeg document (`data: null`) geeft een fout in plaats van een lege administratie | `test_scenario2_laden_met_null_start_leeg` |
-| 32 | **Administratie blijft in de gedeelde browseropslag achter voor de volgende gebruiker** | `test_geen_browseropslag_in_de_inbouwstand` |
-| 33 | Vreemd of onvolledig bericht verstoort de module | `test_onbekende_berichten_worden_genegeerd` |
-| 34 | Tabbladen van het portaal lopen niet gelijk; niet-toegestane view wordt toch geopend | `test_ga_en_view_lopen_gelijk` |
-| 35 | Eigen zijbalk, hulp of opslagpaneel blijft zichtbaar binnen het portaal | `test_eigen_zijbalk_en_hulp_zijn_weg` |
-| 36 | GPS-knop verschijnt terwijl het portaal die niet heeft toegestaan | `test_huidige_locatie_volgt_de_vlag` |
-| 37 | Kaartdiensten gaan rechtstreeks naar buiten in plaats van via het portaal | `test_geo_parameter_stuurt_de_kaartdiensten_om` |
-| 38 | Wijziging wordt vertraagd of niet doorgegeven aan het portaal | `test_bewaren_gaat_direct_en_zonder_vertraging` |
-| 39 | **Mislukt opslaan draait de invoer terug of gaat stil voorbij** | `test_scenario5_fout_laat_de_gegevens_staan` |
-| 40 | **Document over de limiet geeft "probeer opnieuw" in plaats van een uitweg** | `test_scenario6_te_groot_geeft_een_uitweg` |
-| 41 | **Elders gewijzigd: andere versie laden werkt niet** | `test_scenario3_conflict_andere_versie_laden` |
-| 42 | **Elders gewijzigd: eigen versie opslaan overschrijft niet, of met het verkeerde versienummer** | `test_scenario4_conflict_mijn_versie_opslaan` |
-| 43 | **Trage server: ingetypt werk wordt overschreven door een laat binnenkomend laden** | `test_scenario1_traag_laden_blokkeert_de_invoer` |
-| 44 | **Ongevraagd `laden` overschrijft werk** | `test_laat_laden_zonder_verzoek_wordt_genegeerd` |
-| 45 | Export levert binnen een kader geen bestand op (declaratie niet in te leveren) | `test_scenario9_export_werkt_in_het_kader` |
-| 46 | Teksten over bestanden, OneDrive of "deze browser" lekken het portaal in | `test_geen_verwijzingen_naar_eigen_opslag_in_het_kader` |
-| 47 | Opslagstatus toont de verkeerde werkelijkheid binnen het portaal | `test_opslaghint_volgt_het_portaal` |
+| 29 | Hernoemde functie breekt de VSA-laag | `test_functie_bestaat_nog` (14 namen) |
+| 30 | **`D` of `bannerVerborgen` wordt `const` → laden bij VSA mislukt zonder melding** | `test_D_en_bannerVerborgen_zijn_niet_const` |
+| 31 | `opslag` verdwijnt | `test_opslag_bestaat_nog` |
+| 32 | **IIFE-structuur wijzigt → de VSA-laag landt buiten onze scope** | `test_een_iife_geopend_door_core_en_gesloten_door_boot`, `test_vsa_laag_landt_binnen_de_iife` |
+| 33 | Netwerkaanroep buiten `fetch` om → gaat langs de wikkel en faalt stil op productie | `test_geen_netwerkverkeer_buiten_fetch_om` (5 vormen) |
+| 34 | Nieuwe externe host wordt niet gemeld → bundel geweigerd bij het bouwen | `test_externe_hosts_zijn_de_bekende_drie` |
+| 35 | "Huidige locatie" verliest zijn klasse, of er komt doorlopend volgen bij | `test_huidige_locatie_houdt_zijn_vorm`, `test_precies_een_getCurrentPosition_en_geen_watchPosition` |
+| 36 | Gewijzigde downloadmelding → VSA's vervanging grijpt niet meer | `test_downloadmelding_is_ongewijzigd` (4 teksten) |
+| 37 | Vijfde downloadroute wordt niet afgevangen door de VSA-laag | `test_geen_vijfde_downloadroute` |
+
+De controles zijn gemuteerd getest: elk van bovenstaande risico's is nagespeeld en werd gepakt.
 
 ## Tier 3 — build & integriteit (`test_build.py`)
 

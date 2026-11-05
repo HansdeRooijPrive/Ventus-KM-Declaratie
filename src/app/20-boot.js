@@ -1,9 +1,7 @@
 /* ============================================================
    Start
    ============================================================ */
-if (!INBOUW_AAN) {
-  try { opslag.autoOpslaan = localStorage.getItem(STORE_KEY + '.auto') !== '0'; } catch (e) { /* standaard aan */ }
-}
+try { opslag.autoOpslaan = localStorage.getItem(STORE_KEY + '.auto') !== '0'; } catch (e) { /* standaard aan */ }
 
 migreer();          // maand-tarieven vastleggen en oude schattingen opruimen
 tekenVersie();
@@ -15,14 +13,10 @@ tekenMaand();
 tekenOverzicht();
 tekenLocaties();
 tekenOpslag();
-if (INBOUW_AAN) {
-  inbouwInit();               // portaal: gereed sturen en wachten op de administratie
-} else {
-  odInit();                                                   // OneDrive: inlog-terugkeer afhandelen en (in OneDrive-modus) binnenhalen
-  if (D.settings.opslagModus !== 'onedrive') herstelOpslagbestand();
-}
+odInit();                                                     // OneDrive: inlog-terugkeer afhandelen en (in OneDrive-modus) binnenhalen
+if (D.settings.opslagModus !== 'onedrive') herstelOpslagbestand();
 
-if (!opslagOk && !INBOUW_AAN) {
+if (!opslagOk) {
   const w = document.createElement('div');
   w.style.cssText = 'background:#fdecec;border:1px solid #f0cdcd;color:#8b2c2c;padding:10px 14px;border-radius:11px;margin-bottom:14px;font-size:13.5px';
   w.textContent = 'Let op: deze browser staat geen lokale noodkopie toe. Kies bij Instellingen een opslagbestand op je ' +
@@ -31,13 +25,12 @@ if (!opslagOk && !INBOUW_AAN) {
 }
 
 // Nog niets ingericht? Dan eerst het welkomstscherm
-if (!INBOUW_AAN && !D.ingericht && !D.locaties.length && !(D.settings.naam || '').trim()) gaNaar('welkom');
+if (!D.ingericht && !D.locaties.length && !(D.settings.naam || '').trim()) gaNaar('welkom');
 
 // Nieuwsberichten tonen — niet bovenop het welkomstscherm.
 // In OneDrive-modus regelt odInit dit (ná laden, of overslaan als er eerst
 // ingelogd moet worden), zodat nieuws niet stapelt met het inlogscherm.
-// In de inbouwstand toont het portaal zelf "Wat is nieuw"; wij roepen toonBerichten niet aan.
-if (!INBOUW_AAN && ui.view !== 'welkom' && D.settings.opslagModus !== 'onedrive') toonBerichten();
+if (ui.view !== 'welkom' && D.settings.opslagModus !== 'onedrive') toonBerichten();
 
 // Open vandaag als die in de huidige maand valt
 const vandaag = new Date();
@@ -51,7 +44,6 @@ if (nowYm() === ui.ym) {
 // (iOS Safari ondersteunt dit niet en negeert het; daar werkt "zet op startscherm".)
 (function () {
   const el = document.documentElement;
-  if (INBOUW_AAN) return;      // binnen een kader werkt volledig scherm niet en staat het in de weg
   const staStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
   const mobiel = window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
   if (staStandalone || !mobiel || !el.requestFullscreen) return;
@@ -68,8 +60,6 @@ window.__km = {
   nieuws: toonBerichten, berichten: BERICHTEN,
   meld: { soorten: MELDSOORTEN, invoer: meldInvoer, tekst: meldTekst, context: meldContext,
           onderwerp: meldOnderwerp, mail: meldMail },
-  inbouw: { aan: INBOUW_AAN, stand: INBOUW, contract: INBOUW_CONTRACT, dataVersie: INBOUW_DATAVERSIE,
-            geo: { basis: GEO_BASIS, nominatim: GEO_NOMINATIM, osrm: GEO_OSRM, overpass: GEO_OVERPASS } },
   // Testhaakje: pure functies bereikbaar maken voor de geautomatiseerde tests (tests/test_pure.py)
   fns: { afrond, haversine, locKort, locNaam, locLabel, comboZoek, dagKm, maandKm, paarAfstand,
          nominatimQuery, daysInMonth, shiftYm, ymLabel, normPostcode, parseAdres, migreer, berichtGelezen },

@@ -1,19 +1,6 @@
 /* ============================================================
-   Netwerk: geocoding (Nominatim) + routeafstand (OSRM) + POI's (Overpass)
-
-   De basis is instelbaar via de URL-parameter ?geo=. Het portaal levert die
-   waarde volledig aan, inclusief een eventueel voorvoegsel; we plakken er niets
-   aan vast en knippen er niets af, en roepen <geo>/nominatim/..., <geo>/osrm/...
-   en <geo>/overpass/... aan met dezelfde paden en parameters als de echte
-   diensten eronder. Zonder ?geo= blijft alles zoals voorheen.
+   Netwerk: geocoding (Nominatim) + routeafstand (OSRM)
    ============================================================ */
-const GEO_BASIS = (function () {
-  try { return new URLSearchParams(location.search).get('geo') || ''; }
-  catch (e) { return ''; }
-})();
-const GEO_NOMINATIM = GEO_BASIS ? GEO_BASIS + '/nominatim' : 'https://nominatim.openstreetmap.org';
-const GEO_OSRM      = GEO_BASIS ? GEO_BASIS + '/osrm'      : 'https://router.project-osrm.org';
-const GEO_OVERPASS  = GEO_BASIS ? GEO_BASIS + '/overpass'  : 'https://overpass-api.de';
 function createQueue(gap) {
   let tail = Promise.resolve(); let last = 0;
   return function (fn) {
@@ -40,7 +27,7 @@ function nominatimQuery(loc) {
 }
 
 async function zoekAdres(tekst) {
-  const url = GEO_NOMINATIM + '/search?format=jsonv2&addressdetails=1&limit=6&countrycodes=nl&q=' +
+  const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&countrycodes=nl&q=' +
     encodeURIComponent(tekst);
   const res = await NOMQ(() => fetch(url, { headers: { 'Accept': 'application/json' } }).then(r => r.json()));
   return Array.isArray(res) ? res : [];
@@ -85,7 +72,7 @@ function dichtstbijLocatie(lat, lon, maxMeter) {
 
 /* Reverse-geocoding: adresgegevens (en eventueel een naam) op deze coördinaten. */
 async function reverseAdres(lat, lon) {
-  const url = GEO_NOMINATIM + '/reverse?format=jsonv2&addressdetails=1&namedetails=1&zoom=18&lat=' + lat + '&lon=' + lon;
+  const url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&namedetails=1&zoom=18&lat=' + lat + '&lon=' + lon;
   const r = await NOMQ(() => fetch(url, { headers: { 'Accept': 'application/json' } }).then(x => x.json()));
   const a = (r && r.address) || {};
   return {
@@ -100,16 +87,13 @@ async function reverseAdres(lat, lon) {
 /* Dichtstbijzijnde genoemde plek (restaurant, winkel, bedrijf…) via Overpass — naamvoorstel. */
 const OVERPASSQ = createQueue(1100);
 async function poiNaamDichtbij(lat, lon, straal) {
-  /* In de inbouwstand hoort Overpass alleen te lopen als het portaal de locatieknop
-     heeft aangezet; rechtstreeks verkeer naar buiten wordt daar geblokkeerd. */
-  if (INBOUW_AAN && !inbouwLocatieToegestaan()) return null;
   const soorten = ['amenity', 'shop', 'office', 'tourism', 'leisure', 'craft'];
   const q = '[out:json][timeout:12];(' +
     soorten.map(s => 'node(around:' + straal + ',' + lat + ',' + lon + ')[name][' + s + '];').join('') +
     soorten.map(s => 'way(around:' + straal + ',' + lat + ',' + lon + ')[name][' + s + '];').join('') +
     ');out center tags 30;';
   try {
-    const r = await OVERPASSQ(() => fetch(GEO_OVERPASS + '/api/interpreter', {
+    const r = await OVERPASSQ(() => fetch('https://overpass-api.de/api/interpreter', {
       method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(q)
     }).then(x => x.json()));
     let best = null, bestKm = Infinity;
@@ -191,7 +175,7 @@ async function routeAfstand(vanId, naarId) {
   }
   let out;
   try {
-    const url = GEO_OSRM + '/route/v1/driving/' +
+    const url = 'https://router.project-osrm.org/route/v1/driving/' +
       a.lon + ',' + a.lat + ';' + b.lon + ',' + b.lat + '?overview=false&alternatives=false&steps=false';
     const j = await OSRMQ(() => fetch(url).then(r => r.json()));
     if (j && j.routes && j.routes[0]) out = { km: j.routes[0].distance / 1000, bron: 'route' };

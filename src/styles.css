@@ -421,22 +421,3 @@ table.grid tfoot td{font-weight:700;background:var(--surface-2);border-top:2px s
   .day-summary{display:none}
   .grid2{grid-template-columns:1fr}
 }
-
-/* ============================================================
-   Inbouwstand (?inbouw=vsa): de module draait in een kader binnen een portaal.
-   Navigatie, hulp, nieuws en opslag verzorgt het portaal zelf, dus die
-   onderdelen worden verborgen — niet verwijderd, zodat de code die ze
-   aanstuurt gewoon blijft werken. Zie src/app/22-inbouw.js.
-   ============================================================ */
-.km-inbouw .zijbalk,
-.km-inbouw #view-handleiding,
-.km-inbouw #view-nieuws,
-.km-inbouw #view-over,
-.km-inbouw #view-wijziging,
-.km-inbouw #view-bug,
-.km-inbouw #opslagKaart,
-.km-inbouw #odKaart,
-.km-inbouw #installKaart,
-.km-inbouw #opslagBanner { display:none !important }
-.km-inbouw body { padding-left:0 }
-.km-inbouw main { padding-top:18px }
