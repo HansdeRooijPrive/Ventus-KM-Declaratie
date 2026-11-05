@@ -12,7 +12,7 @@ stil verkeerd kan gaan werken bij jullie. Daar wil ik graag aan meewerken.
 Hieronder staan eerst jullie vijf vragen beantwoord. Ik heb ze **gemeten aan v3.22** in plaats van
 geschat; één van de antwoorden verandert wat er in het contract moet staan.
 
-Daarna doe ik acht voorstellen voor v1.1. Drie daarvan zijn wat mij betreft blokkerend, en ik stel
+Daarna doe ik acht voorstellen voor v1.1. Drie daarvan zou ik graag vooraf geregeld zien, en ik stel
 voor de oplevering in twee fasen te knippen — dat halveert ruwweg wat er vóór de eerste werkende
 koppeling gebouwd moet worden.
 
@@ -133,7 +133,7 @@ Dit draait jullie punt 8 om: aan mijn kant hoeft er niets, aan jullie kant wel. 
 
 ## Deel 2 — Voorstellen voor v1.1
 
-### A. `allow-downloads` als MOET aan VSA-zijde — blokkerend
+### A. `allow-downloads` als MOET aan VSA-zijde — graag vooraf geregeld
 
 Punt 8 noemt de export jullie belangrijkste functionele eis, maar legt de voorwaarde bij mij:
 *"Als het downloaden binnen een kader anders moet dan nu, hoor je dat van ons."* Uit de meting
@@ -145,7 +145,7 @@ hierboven blijkt dat het andersom ligt.
 Ik kan dit aan mijn kant niet afvangen en zelfs niet detecteren — de klik levert geen enkel signaal
 op. Daarom hoort het in het contract en niet in een mail.
 
-### B. Een antwoord voor "te groot", plus opruimen — blokkerend
+### B. Een antwoord voor "te groot", plus opruimen — graag vooraf geregeld
 
 `bewaren` kent nu drie antwoorden: `bewaard`, `conflict` en `fout` met *"Opslaan is mislukt. Probeer
 het opnieuw."* Een document over de 2 MB is geen tijdelijke storing: opnieuw proberen helpt nooit,
@@ -209,7 +209,7 @@ nooit bewust besloten.
 Ze versturen via de mailclient van de medewerker naar een Jira-mailhandler. Binnen een iframe werkt
 `mailto` doorgaans wel, maar als jullie ze willen houden, meet ik dat eerst — net als bij de export.
 
-### G. Acceptatie: wanneer is het af, en wie stelt dat vast? — blokkerend
+### G. Acceptatie: wanneer is het af, en wie stelt dat vast? — graag vooraf geregeld
 
 Dit is wat mij betreft de belangrijkste toevoeging. Het contract beschrijft de koppeling tot in
 detail, maar niet **wanneer die correct is geïmplementeerd**. Er is geen acceptatieprocedure en geen
@@ -295,14 +295,14 @@ komen daarbij.
 
 | | |
 |---|---|
-| **Blokkerend — graag in v1.1** | **A** `allow-downloads`, **B** "te groot" + opruimen, **G** acceptatie en scenariolijst |
-| **Graag in dezelfde ronde** | **H** fasering, **C** eerste `laden`, **F** besluit over melden |
+| **Graag vooraf geregeld, in v1.1** | **A** `allow-downloads`, **B** "te groot" + opruimen, **G** acceptatie en scenariolijst |
+| **In dezelfde ronde mee te nemen** | **H** fasering, **C** eerste `laden`, **F** besluit over melden |
 | **Tijdens het bouwen af te stemmen** | **D** `bronId`, **E** Overpass als POST |
 
 A, B en G hebben één ding gemeen: zonder die drie kunnen we niet aantonen dát het goed gaat, en
 gaat het bij alle drie om een medewerker die stil zijn werk kwijtraakt.
 
-Wat ik van jullie terug nodig heb om te kunnen beginnen:
+Wat ik van jullie nodig heb om te kunnen beginnen:
 
 1. Het aangepaste contract als **v1.1**.
 2. De testpagina.
